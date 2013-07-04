@@ -1,0 +1,110 @@
+<?php
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of minventory
+ *
+ * @author simon
+ */
+class minventory extends CI_Model{
+    /*function minventory(){
+       parent::CI_Model();
+   }*/
+    function get_all_inventory(){
+       $data = array();
+       $Q = $this -> db -> get('inventory');
+       if($Q->num_rows()>0){
+           foreach($Q->result_array() as $row){
+              $answer = $this -> minventory_status -> get_inventory_status_by_id($row['statusid']);
+              $answer1 = $this -> mmembers -> get_member_by_id($row['bought_donated']);
+              $row['bought_donated'] = strtolower(@$answer1['fname']." ".substr(@$answer1['mname'],0,1)." ".@$answer1['surname']);
+              $row['status'] = strtolower($answer['status']);
+              $data[] = $row;
+           }
+       }
+       $Q ->free_result();
+       return $data;
+   }
+   function get_inventory_by_id($id){
+        $data = array();
+       $this -> db -> where('id',$id);
+       $Q = $this -> db -> get('inventory');
+       if($Q->num_rows()>0){
+          $data = $Q->row_array();
+          $status = $this -> minventory_status -> get_inventory_status_by_id($data['statusid']);
+          $data['status'] = $status['status'];
+          $bought_donated = $this -> mmembers -> get_member_by_id($data['bought_donated']);
+          $data['bought_donated_name'] = $bought_donated['fname']." ".$bought_donated['mname']." ".$bought_donated['surname'];
+       }
+       $Q->free_result();
+       return $data;
+   }
+  function get_invetory_by_dateacqrd($dateacqrd){
+      $data = array();
+      $this -> db -> where('date_acquired',$dateacqrd);
+      $Q = $this -> db -> get('inventory');
+        if($Q -> num_rows() > 0){
+            foreach($Q -> result_array() as $row){
+                $data[] = $row;
+            }
+        }
+        $Q -> free_result();
+        return $data;
+  } 
+  function get_inventory_byStatusid($statusid){
+      $data = array();
+      $this -> db -> where('statusid',$statusid);
+      $Q = $this -> db -> get('inventory');
+        if($Q -> num_rows() > 0){
+            foreach($Q -> result_array() as $row){
+                $data[] = $row;
+            }
+        }
+        $Q -> free_result();
+        return $data;
+  }
+  function add_inventory_item(){
+     $values = array(
+                     'id' => '',
+                      'itemname' => $this -> input -> post('itemname'),
+                      'asset_code' => $this -> input -> post('asset_code'),
+                      'quantity' => $this -> input -> post('quantity'),
+                      'date_acquired' => $this -> input -> post('date_acquired'),
+                      'statusid' => $this -> input -> post('status'),
+                      'acquisition_mode' => $this -> input -> post('acquisition_mode'),
+                      'bought_donated' => $this -> input -> post('bought_donated'),
+                      'description' => $this -> input -> post('description'),
+                      'monetary_value' => $this -> input -> post('monetary_value')
+                    );
+     $this -> db -> insert('inventory',$values);
+  }
+  function edit_inventory($id,$inv_status,$bought){
+      $values = array(
+                      'itemname' => $this -> input -> post('itemname'),
+                      'asset_code' => $this -> input -> post('asset_code'),
+                      'quantity' => $this -> input -> post('quantity'),
+                      'date_acquired' => $this -> input -> post('date_acquired'),
+                      'statusid' =>  $inv_status,
+                      'acquisition_mode' => $this -> input -> post('acquisition_mode'),
+                      'bought_donated' =>  $bought,
+                      'description' => $this -> input -> post('description'),
+                      'monetary_value' => $this -> input -> post('monetary_value')
+                    );
+      $this -> db -> where('id',$id);
+      $this -> db -> update('inventory',$values);
+  }
+  function delete_inventory_asset($id){
+      $values = array(
+                      'status' => 'Inactive' 
+                       );
+      $this -> db -> where('id',$id);
+      $this -> db -> update('inventory',$values);
+  }
+}
+
+?>
+  

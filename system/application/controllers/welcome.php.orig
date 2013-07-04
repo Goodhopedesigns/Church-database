@@ -1,0 +1,95 @@
+<?php 
+session_start();
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Welcome extends CI_Controller {
+
+	
+	public function index()
+	{
+		$data['title']= 'CIS | Home';
+                
+                if(isset($_SESSION['user'])){
+                $data['main'] = $_SESSION['home'];
+                
+                }else{    
+		$data['main'] = 'public/home_login';
+                }
+		$this -> load -> vars($data);
+		$this -> load -> view('generic/template');
+	}
+	
+	function verify()
+	{
+		if ($this-> input-> post('username'))
+		{	
+			//$u = $this-> input-> post('username');
+			//$pw = strtolower($this-> input-> post('password'));
+                    
+			$answer = $this-> musers-> verifyUser();
+			if($answer)
+			{
+				$_SESSION['user']['userid'] = $answer['id'];
+				$_SESSION['user']['role'] = $answer['role'];
+				$_SESSION['user']['name'] = $answer['name'];
+				if ($_SESSION['user']['role'] == 5)
+				{
+					$data['main'] = 'users/admin';
+					$_SESSION['home'] = 'users/admin';
+                                        $data['title'] = "CIS | Login";
+                                        $_SESSION['main_title'] = "Administrator's Dashboard";
+				}
+				elseif($_SESSION['user']['role'] == 2)
+				{
+					$data['main'] = 'users/report_viewer';
+                                        $_SESSION['home'] = 'users/report_viewer';
+					$data['title'] = "CIS | Login";
+                                        $_SESSION['main_title'] = "Data viewer Dashboard";
+							
+				}
+				elseif($_SESSION['user']['role'] == 1)
+				{
+					$data['main'] = 'users/data_entry_home_page';
+                                        $_SESSION['home'] = 'users/data_entry_home_page';
+					$data['title'] = "CIS | Login";
+                                        $_SESSION['main_title'] = "Data entry Dashboard";
+					
+				}
+                                $this-> load-> vars($data);
+			        $this-> load-> view('generic/template',$data);
+			}
+			else
+			{
+				$_SESSION['message'] = "WRONG USERNAME OR/AND PASSWORD";
+				redirect('welcome/index','refresh');
+			}
+		
+		}
+		else
+		{
+			redirect('welcome/index','refresh');
+		}
+	}
+        
+       
+	
+	function goverify()
+	{
+		$data['main'] = 'users/data_entry_home_page';
+		$data['title'] = "CIS | Login";
+		$this-> load-> vars($data);
+		$this-> load-> view('generic/template',$data);
+	}
+	
+	
+	
+	
+	function logout(){
+		unset($_SESSION['user']);
+		redirect('welcome/index','refresh');
+	}
+
+}
+
+/* End of file welcome.php */
+/* Location: ./application/controllers/welcome.php */

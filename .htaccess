@@ -1,0 +1,12 @@
+RewriteEngine On
+# allow access to all .css and .js in sub-directories..
+#RewriteCond %{REQUEST_URI} !\.css$
+#RewriteCond %{REQUEST_URI} !\.js$
+# allow access to the files inside img/, but not a directory listing..
+#RewriteCond %{REQUEST_URI} !\.gif)$
+#RewriteCond %{REQUEST_URI} !\.png)$
+#RewriteCond %{REQUEST_URI} !\.jpg)$
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond $1 !^(index\.php|images/|robots\.txt|/css/olas\.css|config/tcpdf|/tcpdf\.php|3rdparty/tcpdf/tcpdf\.php|config/lang/eng\.php/application/libraries/pdf\.php|application/3rdparty/tcpdf/config/tcpdf_config\.php)
+RewriteRule ^(.*)$ /church\/index.php/$1 [L]

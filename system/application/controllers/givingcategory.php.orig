@@ -1,0 +1,86 @@
+<?php 
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class GivingCategory extends CI_Controller {
+		function GivingCategory(){
+			parent::__construct();
+			session_start();
+			if(!isset($_SESSION['user'])){redirect('index.php/welcome/index','refresh');}
+			}
+	public function index()
+		{
+			$data['title'] = 'CIS | Giving List';
+			$data['header'] = 'THE CHURCH GIVING CATEGORIES';
+			$data['main'] = 'givings/giving_category_ls';
+			$data['answer'] = $this -> mgiving_category -> get_all_giving_category();
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}
+		
+
+		
+	function addingCategory() // adding Category to database.
+		{	if(isset($_POST['submit']))
+                            {
+                                $category = $this -> input -> post('category');
+                                $add = $this -> mgiving_category -> giving_category_add();
+                                $data['title'] = 'CIS | Giving Category List';
+                                $data['main'] = 'givings/giving_category_ls';
+                                $data['answer'] = $this -> mgiving_category -> get_all_giving_category();
+                                $this -> load ->vars($data);
+                                $this->load->view('generic/template');
+                            }
+                           else
+                           {
+                               redirect('givingcategory/index','refresh');
+                           }
+		}
+	function addCategory()  // add category form.
+		{	
+			$data['title'] = "CIS | Add Giving Category";
+			$data['header'] = "ADD GIVING CATEGORY";
+			$data['main'] = 'givings/giving_category_add';
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}	
+	function editCategory($id){
+			$data['title'] = "CIS | Edit Giving Category";
+			$data['header'] = "EDIT GIVING CATEGORY";
+			$data['answer'] = $this -> mgiving_category ->  get_giving_category_by_id($id);
+			$data['main'] = 'givings/giving_category_edit';
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+	}
+	function editingCategory($id){
+		if(isset($_POST['submit']))
+		{
+			$this -> mgiving_category -> giving_category_edit($id);
+			redirect('givingcategory/index','refresh');
+		}
+		else{
+			redirect('givingcategory/index','refresh');
+		}
+	}
+	function deleteCategory($id)
+		{	
+			$data['title'] = "CIS | Delete Giving Category";
+			$data['answer'] = $this -> mgiving_category ->  get_giving_category_by_id($id);
+			$data['header'] = "YOU ARE ABOUT TO DELETE THE FOLLOWING GIVING CATEGORY.";
+			$data['main'] = 'givings/giving_category_delete';
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}
+	function deletingCategory($id){
+		if(isset($_POST['submit'])){
+				$this -> mgiving_category -> delete_giving_category($id);
+				redirect('givingcategory/index','refresh');
+			}
+		else{
+			redirect('givingcategory/index','refresh');
+		}
+	}
+
+}
+
+/* End of file welcome.php */
+/* Location: ./application/controllers/welcome.php */

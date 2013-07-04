@@ -1,0 +1,77 @@
+<?php
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of expenditure_category
+ *
+ * @author simon
+ */
+class expenditure_category extends CI_Controller{
+    function expenditure_category(){
+			parent::__construct();
+			session_start();
+			if(!isset($_SESSION['user'])){redirect('index.php/welcome/index','refresh');}
+			
+			}
+	function index(){
+       $data['header'] = 'ALL CHURCH EXPENDITURE CATEGORIES';
+       $data['title'] = 'CIS | expenditures';
+       $data['answer'] = $this -> mexpenditure_category ->get_all_expend_category();
+       $data['main'] = 'expenditure/expenditure_category_ls';
+       $this -> load -> vars($data);
+       $this -> load -> view('generic/template');
+       
+    }
+	function ExpenditureCategoryAddFrm()
+   {
+       $data['header'] = 'ADD EXPENDITURE CATEGORY';
+       $data['title'] = 'CIS | expenditures';
+       $data['main'] = 'expenditure/expenditure_category_add';
+       $this -> load -> vars($data);
+       $this -> load -> view('generic/template');
+   }
+	 function expenditureCategoryAdd()
+   {	//echo "ha[pa";exit;
+       if(isset($_POST['submit']))
+       {
+        $this -> mexpenditure_category -> add_expenditure_category();
+       redirect('index.php/expenditure_category/index','refresh');
+       }
+	  else {
+       redirect('index.php/expenditure_category/index','refresh');    
+       }
+   }
+	function expendCategoryEditFrm($id){
+       $data['header'] = 'EDIT EXPENDITURE CATEGORY';
+       $data['title'] = 'CIS | expenditures';
+       $data['answer'] = $this -> mexpenditure_category -> get_expend_category_by_id($id);
+       $data['main'] = 'expenditure/expenditure_category_edit';
+       $this -> load -> vars($data);
+       $this -> load -> view('generic/template');
+        /*$this -> mexpenditure_category -> exped_category_edit($id);
+        redirect('expenditure/viewExpenditureCategory','refresh');*/
+     }
+	 function expendCategoryEditing($id){
+         if(isset($_POST['submit']))
+         {
+            $this -> mexpenditure_category -> edit_expend_category($id);
+            redirect('index.php/expenditure_category/index','refresh');
+         }
+         
+         else 
+             {
+               redirect('index.php/expenditure_category/index','refresh');
+             
+             }
+         }
+	function expendCategoryDelete($id){
+                 $this -> mexpenditure_category -> delete_expend_category($id);
+                 redirect('index.php/expenditure_category/index','refresh');  
+     }
+}
+
+?>

@@ -1,0 +1,66 @@
+<?php
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of vistors
+ *
+ * @author simon
+ */
+class visitors extends CI_Controller{
+    function visitors(){
+		parent::__construct();
+			session_start();
+			if(!isset($_SESSION['user'])){ redirect('welcome/index','refresh');}
+    }
+    function index(){
+       $data['title'] = "CIS | visitors";
+       $data['header'] = "LIST OF ALL VISITORS";
+       $data['main'] = 'visitors/visitors_ls';
+       $data['answer'] = $this -> mvisitors -> get_all_vistors();
+       $this -> load ->vars($data);
+       $this->load->view('generic/template'); 
+    }
+    function addVisitorFrm()
+    {
+        
+        $data['title'] = "CIS | Add visitor";
+        $data['header'] = "ADDING VISITOR'S INFORMATION";
+        $data['main'] = 'visitors/visitor_add';
+        $this -> load ->vars($data);
+        $this->load->view('generic/template');
+    }
+    function addingVisitor(){
+       if(isset($_POST['submit']))
+	   {
+            $this -> mvisitors -> add_vistors();
+             redirect('visitors/index','refresh');
+	   }
+	   else
+	   {
+                redirect('visitors/index','refresh');
+	   }
+    }
+   function editVisitorFrm($id){
+        $data['title'] = "CIS | Edit visitor";
+        $data['header'] = "EDITING VISITOR'S INFORMATION";
+        $data['answer'] = $this -> mvisitors -> get_visitor_by_id($id);
+        $data['main'] = 'visitors/visitor_edit';
+        $this -> load ->vars($data);
+        $this->load->view('generic/template');
+   }
+   function editingVisitor($id){
+      if($this -> input -> post('submit'))
+      {	
+          $this -> mvisitors -> edit_visitor($id);
+          redirect('visitors/index','refresh');  
+      }
+ else {
+        redirect('visitors/index','refresh');  
+ }
+   }
+}
+
+?>

@@ -1,0 +1,35 @@
+<div id="message" >
+    Status message..
+</div>
+<div class="error">
+    
+</div>
+<?php
+	echo "<table class='plain_style_tbl'>";
+	echo form_open('Users/addingUsers');
+	echo "<tr>";
+	echo "<td><label for = 'name'>SET USERNAME : </label></td>";
+		 $data = array('name' => 'name','id'=>'name', 'size' => 25);
+	echo "<td>".form_input($data)."</td></tr>";
+	
+	echo "<tr><td><label for = 'role'>ROLE : </label></td>";
+		 
+	echo "<td>".form_dropdown('user_role',$roles)."</td></tr>";
+	//echo "<td>".form_password($data)."</td></tr>";
+
+	
+	/*echo "<tr><td><label for = 'password'>SET PASSWORD : </label></td>";
+		 $data = array('name' => 'password','id'=>'password', 'size' => 25);
+	echo "<td>".form_password($data)."</td></tr>";
+	*/
+
+	
+	
+	//echo "<tr><td><label for = 'repassword'>CONFIRM PASSWORD : </label></td>";
+		// $data = array('name' => 'repassword','id'=>'repassword', 'size' => 25);
+	//echo "<td>".form_password($data)."</td>";
+	
+	echo "<tr><td> </td>";
+	echo "<td>".form_submit('submit','Create','class=btn btn-primary')." ".form_submit('cancel','cancel','class=btn btn-primary')."</td></tr>";
+	echo "</table>";
+?>

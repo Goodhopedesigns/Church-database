@@ -1,0 +1,122 @@
+
+<?php 
+	
+	if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Attendance extends CI_Controller {
+	
+       
+       function Attendance(){
+			parent::__construct();
+			session_start();
+			if(!isset($_SESSION['user'])){redirect('welcome/index','refresh');}
+			$this -> load -> library('mpdf');
+			}
+	public function index()
+		{
+			$data['title'] = 'CIS | Attendance List';
+			$data['main'] = 'attendance/attendance_ls';
+			$data['header'] = 'ATTENDANCE LIST FOR DIFFERENT CHURCH SERVICES';
+			$data['answer'] = $this -> mattendance -> get_all_attendance();
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}
+		
+	public function manage()
+		{
+			$data['title'] = 'CIS | Attendance Manage';
+			$data['main'] = 'attendance/attendance_ls';
+			$data['answer'] = $this -> mattendance -> get_all_attendance();
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}
+
+		
+	function addingAttendance() // adding member to database.
+		{	
+			if($date = $this -> input -> post('submit')){			
+				$this -> mattendance -> attendance_add();
+				redirect('attendance/index','refresh');
+			}
+			else{
+				redirect('attendance/index','refresh');
+			}	
+		}
+	function addAttendance()  // add member form.
+		{	
+			$data['title'] = "CIS | Add Attendance";
+			$data['main'] = 'attendance/attendance_add';
+			$data['header'] = 'SERVICE ATTENDANCE';
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}	
+	function editAttendance($attendanceid) // editing form..
+		{	
+			$data['answer'] = $this -> mattendance -> get_attendance_by_id_1($attendanceid);
+			$data['title'] = "CIS | Edit Attendance";
+			$data['main'] = 'attendance/attendance_edit';
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}
+	function editingAttendance($id)
+		{
+			if($this -> input -> post('submit')){
+			 $this -> mattendance -> attendance_edit($id);
+			
+			redirect('attendance/index','refresh');
+			}
+			else{
+				redirect('attendance/index','refresh');
+			}
+		}
+		
+	function deleteGiving($memberid)
+		{
+			$this -> mmembers -> delete_member($memberid);
+			redirect('members/index','refresh');
+		}
+		
+//---------------------------------------- REPORT VIEWER FUNCTIONS --------------------------------------------//
+       function AttendanceView(){
+         $data['title'] = 'CIS | Attendance List';
+		 $data['header'] = 'ATTENDANCE LIST FOR DIFFERENT CHURCH SERVICES';
+         $data['main'] = 'attendance/attendance_ls_report';
+         $data['answer'] = $this -> mattendance -> get_all_attendance();
+         $this -> load ->vars($data);
+         $this->load->view('generic/template');
+       }
+	  function attendanceByDates(){
+		$date1 = $this -> input -> post('date1');
+		$date2 = $this -> input -> post('date2');
+		$data['answer'] = $this -> mattendance -> get_attendance_by_dates($date1,$date2);
+		$data['title'] = 'CIS | ';
+		$data['date'] = 1;
+		$data['date1'] = $this -> input -> post('date1');
+		$data['date2'] = $this -> input -> post('date2');
+		$data['header'] = 'ATTENDANCE LIST FROM '.$date1." TO ".$date2;
+		$data['main'] = 'attendance/attendance_ls_report';
+		$this -> load -> view('generic/template',$data);
+	  }
+	  function attendancePdf(){
+		 $data['title'] = 'CIS | Attendance List';
+		 $data['header'] = 'ATTENDANCE LIST FOR DIFFERENT CHURCH SERVICES';
+		 $data['main'] = 'attendance/attendance_pdf';
+		  $data['answer'] = $this -> mattendance -> get_all_attendance();
+		 $html = $this->load->view('attendance/attendance_pdf', $data, TRUE);		
+		 $this -> mpdf -> WriteHTML($html);
+		 $this -> mpdf -> Output();
+	  }
+	function attendanceByDatespdf($date1,$date2){
+		$data['title'] = 'CIS | A';
+		$data['header'] = 'ATTENDANCE LIST FROM '.$date1." TO ".$date2;
+		$data['main'] = 'attendance/attendance_pdf';
+		$data['answer'] = $this -> mattendance -> get_attendance_by_dates($date1,$date2);
+		$html = $this->load->view('attendance/attendance_pdf', $data, TRUE);		
+		$this -> mpdf -> WriteHTML($html);
+		$this -> mpdf -> Output();
+
+	}
+}
+
+/* End of file welcome.php */
+/* Location: ./application/controllers/welcome.php */

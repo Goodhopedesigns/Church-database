@@ -1,0 +1,34 @@
+<div id="message" >
+    Status message..
+</div>
+<div class="error">
+    
+</div>  
+ <script>
+     $(function() {
+       $( "#from-datepicker" ).datepicker();
+     });
+  </script><?php 
+ 
+    echo "<table class='plain_style_tbl'>";
+        echo form_open('expenditure/recordingExpenditure');
+        echo "<tr><td><label for = 'related'> CATEGORY:"."<span class='mandatory'>*</span> "." </label></td>";
+		 $data = array('name' => 'category','id'=>'category', 'size' => 25);
+	echo "<td>".form_dropdown('category',$category)."</td></tr>";
+    
+       
+        echo "<tr><td><label for = 'date'>DATE :"."<span class='mandatory'>*</span> "." </label></td>";
+		 $data = array('name' => 'date','id'=>'from-datepicker', 'size' => 25);
+	echo "<td>".form_input($data)."</td></tr>";
+        
+        echo "<tr><td><label for = 'amount'>AMOUNT : "."<span class='mandatory'>*</span> "."</label></td>";
+		 $data = array('name' => 'amount','id'=>'amount', 'size' => 25);
+	echo "<td>".form_input($data)."</td>";
+        echo "<tr><td><label for = 'amount'>DESCRIPTION"."<span class='mandatory'>*</span> "."</label></td><td>";
+             $data = array('name'=> 'description','id'=> 'desc','rows'=> 5, 'cols'=> '40');
+        echo form_textarea($data) ."</td></tr> ";
+        echo "<tr><td></td><td  align='center' >".  form_submit('submit','submit','id=save_expenditure class=btn');
+        echo  form_submit('cancel','cancel','class=btn btn-primary')."</td></tr>";
+        echo form_close();
+    echo "</table>";
+?>

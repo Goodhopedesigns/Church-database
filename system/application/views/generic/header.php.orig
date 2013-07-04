@@ -1,0 +1,36 @@
+<!-- Author: Jeremiah < Jemanyanda02@hotmail.com > -->
+        <div class="navbar-inner">
+          <img src="http://localhost/cityharvest/images/logo.png" class="cit_logo_top"> 
+           <span id="header_title"> cityharvest church information system</span>
+          <img src="http://localhost/cityharvest/images/logo.png" class="cit_logo_top">
+          <hr/>
+        
+<!--            <ul id="nav">-->
+           <?php     if(isset($_SESSION['user'])){ //check for active login 
+             
+               ?>
+        
+	  <?php 
+	    echo '<span style="margin-right:600px;">'.anchor('welcome/index',' HOME').'</span>'; 
+	  echo "Logged in as..  ".strtoupper(anchor('users/profile/'.$_SESSION['user']['userid'],$_SESSION['user']['name']));
+      echo anchor('welcome/logout','<span style="margin-left:15px; margin-right:10px;" class="btn btn-primary">LOGOUT</span>');	  ?>
+	
+        
+              
+<!--            </ul>-->
+          <?php } else{  ?>
+           <span style="font-size: 18px; text-transform: uppercase; "> 
+                
+               <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="welcome/index" class="link">Home</a>
+                </li>
+                <li><a href="welcome/about" class="link">About</a></li>
+                <li><a href="welcome/contact" class="link">Contact</a></li>                
+           </ul>
+            </span>
+              
+             
+          
+          <?php } ?>
+        </div>

@@ -1,0 +1,154 @@
+<?php session_start();
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Users extends CI_Controller {
+
+	function Users()
+	 {
+		if(!isset($_SESSION['user'])){ redirect('index.php/welcome/index','refresh');}
+		parent::__construct();
+	 }
+
+	public function index()
+		{
+			
+		}
+		
+		
+	function addingUsers() // adding member to database.
+		{	
+             if(isset($_POST['submit'])){
+			$add = $this -> musers -> addUsers();
+			$data['title'] = 'CIS | Admin';
+			$data['main'] = 'users/admin';
+			$this -> load ->vars($data);
+			$this->load->view('generic/template',$data);
+			//redirect('Users/addUser','refresh');
+             }
+             else
+                 {
+                    redirect('welcome/index','refresh');
+                 }
+		}
+	function addUser()  // add user form.
+		{
+			$data['title'] = 'CIS | Users Create';
+			$data['main'] = 'users/users_register';
+			$data['roles'] = $this -> muser_role -> get_userrole_dropdown();
+			$this -> load ->vars($data);
+			$this->load->view('generic/template',$data);
+		}
+		
+		function process_resetPassword() ////processing password reset
+		{
+                    if(isset($_POST['submit']))
+                    {
+                        //processing password reset...
+                        $id = $_SESSION['user']['userid'];
+                        $currentpwd = $this -> musers -> get_password_by_userid($userid);
+			$oldpwd = strtolower(md5($this -> input -> post('oldpassword')));
+			$newpwd = $this -> input -> post('nwpassword');
+			$confirmpwd = $this -> input -> post('cnwpassword');
+			if($currentpwd == $oldpwd)
+                        { 
+                            if($newpwd == $confirmpwd)
+                            {
+                                $newpwd = md5($newpwd);
+                                $this -> musers -> resetPassword($userid,$newpwd);
+                                $data['title'] = 'CIS | ' .$data['user']['name'].' Profile';
+                                $data['main'] = 'users/profile'.$id;
+                                $this -> load ->vars($data);
+                                $this->load->view('generic/template',$data);
+                            }
+                            else
+                            {
+                                redirect('users/reset_Password/'.$id,'refresh');
+                            }
+                        }
+                        else
+                        {
+                            redirect('users/reset_Password/'.$id,'refresh');
+                        }
+                    }
+                    else
+                    {
+                        redirect('users/profile/'.$id,'refresh');
+                    }
+                }
+                
+		function resetingPassword()
+		{	
+			//print_r($_POST);exit;
+			$userid = $this -> input -> post('users');
+			$currentpwd = $this -> musers -> get_password_by_userid($userid);
+			$oldpwd = strtolower(md5($this -> input -> post('oldpassword')));
+			$newpwd = $this -> input -> post('nwpassword');
+			$confirmpwd = $this -> input -> post('cnwpassword');
+			if($currentpwd == $oldpwd){ 
+				if($newpwd == $confirmpwd)
+				{
+					$newpwd = md5($newpwd);
+					$this -> musers -> resetPassword($userid,$newpwd);
+					$data['title'] = 'CIS | Admin';
+					$data['main'] = 'users/admin';
+					$this -> load ->vars($data);
+					$this->load->view('generic/template',$data);
+				}
+				else
+				{
+					$_SESSION['message'] = "New passwords do not match!";
+					redirect('users/resetPassword','refresh');
+				}
+			}
+			else
+			{
+				$_SESSION['message'] = "Old password does not exist!";
+				redirect('users/resetPassword','refresh');
+			}
+		}
+                
+                function profile($id)
+                {
+                    $data['user'] = $this -> musers -> get_user_by_id($id);
+                    $data['title'] = 'CIS | '.$data['user']['name'].' Profile';
+                    $data['main'] = 'users/profile';
+                    $this -> load ->vars($data);
+                    $this->load->view('generic/template',$data);
+                }
+                
+                function editProfile()
+               {
+                    $id = $_SESSION['user']['userid'];
+                    $data['user'] = $this -> musers -> get_user_by_id($id);
+                    $data['title'] = 'CIS | Edit '.$data['user']['name'].' Profile';
+                    $data['main'] = 'users/editProfile';
+                    $this -> load ->vars($data);
+                    $this->load->view('generic/template',$data);
+                }
+                
+                 function reset_Password($id)
+                {
+                   // if(isset($_POST['submit']))
+                    //{
+                        $id = $_SESSION['user']['userid'];
+                        $data['user'] = $this -> musers -> get_user_by_id($id);
+                        $data['main'] = 'users/resetPassword';
+                        $data['title'] = 'CIS | '.$data['user']['name'].' | Resetting Password';
+                        $this -> load -> view('generic/template',$data);
+                   //}
+                   //else
+                   //{
+                   //redirect('users/profile/'.$id,'refresh');
+                   //}
+
+                }//end function
+                
+                function viewUserActions()
+                {
+                    $data['actions']=$this->musers->getAllUserActions();
+                    $data['title']='CIS | User Actions';
+                    $data['main']='users/user_actions';
+                    $this->load->view('generic/template',$data);
+                }
+                
+}

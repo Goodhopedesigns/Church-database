@@ -1,0 +1,68 @@
+<script type="text/javascript">
+     $(function() {
+       $( "#datepicker1" ).datepicker();
+     });
+  
+     $(function() {
+       $( "#datepicker2" ).datepicker();
+     });
+  </script>
+<?php
+	 $pdf_query = $query; // a variable for printing different reports on pdf......
+	
+	echo  form_open('expenditure/search');
+	echo "<div class='filter_div'>"
+        ."View by expenditure category....    &nbsp;&nbsp; View by date ....<br/>";
+	
+	echo  form_dropdown('expenditure_category',$category);
+			$data = array('name'=> 'date1', 'id'=> 'datepicker1','class'=>'datepicker','placeholder'=>'Between Date 1','style'=>'margin-left:12px;','readonly'=> '','size' => 20);
+	echo "".form_input($data);
+	
+	$data = array('name'=> 'date2', 'id'=> 'datepicker2','class'=>'datepicker','placeholder'=>'And Date 2','readonly'=> '','size' => 20);
+	
+	echo  form_input($data)
+        ."</div>";
+	
+	//echo " CLICK ".anchor('members/memberListPdf/'.$query,'HERE')." TO PRINT PDF</td></tr>";
+		  $data = array('name' => 'search','align' => 'left', 'id' => 'search','class'=>'search_bar', 'placeholder' => 'Your keyword here..');
+	
+	
+	echo  "<div class='filter_div'>"
+        ."Search expenditure<br/><div id = 'search_box'>"
+	.form_input($data).form_submit('expenditure/search','search','class=btn btn-primary')."</div>"
+        ."</div>";
+	
+	 echo "<div class='display_action'>";
+        $excel = "<img src='".base_url()."images/excel.png' class='icon' >";
+        echo anchor('expenditure/export /'.$query,$excel);
+        $pdf = " <img src='".base_url()."images/pdf.png' class='icon' >";
+        echo $print = "<img src='".base_url()."images/print.png' class='icon' >";
+        echo anchor_popup('expenditure/memberListPdf/'.$query,$pdf)         
+        ."</div>";
+    echo "<table border = '1' class='list_tbl'>";
+    echo "<tr><td colspan = '11' align = 'center'><center>".@$links."</center></td></tr>";
+    echo       "<tr><th>S/N</th>
+                    <th>EXPENDITURE CATEGORY</th>
+                    <th>DESCRIPTION</th>
+                    <th>AMOUNT</th>
+                    <th>DATE</th>
+                    <th colspan = '2'>ACTION</th>
+                  </tr>";
+                $index = 0;
+            foreach($answer as $key => $list)
+                {
+                    $index++;
+                   echo "<td align = 'right'>".$index."</td>";
+                   echo "<td>".$list['category']."</td>";
+                   echo "<td>".$list['description']."</td>";
+                   echo "<td>".$list['amount']."</td>";
+                   echo "<td>".$list['date']."</td>";
+                   echo "<td>".anchor('expenditure/editExpenditureFrm/'.$list['id'],'Edit')."</td>";
+                   echo "<td>".anchor('expenditure/deleteExpenditure/'.$list['id'],'Delete','onclick ="return confirmDelete()"')."</td></tr>";
+                }
+               
+               echo "<tr><td colspan = '11' align = 'center'><center>".@$links."</center></td></tr>"; 
+               echo "<tr><td colspan ='7' align = 'center'>".anchor('expenditure/recordExpenditureFrm','RECORD NEW EXPENDITURE')."</td></tr>";
+             
+    echo "</table>";
+?>

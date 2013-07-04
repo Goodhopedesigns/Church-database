@@ -1,0 +1,206 @@
+/* /js/ajax.js
+ * Author Jeremiah <Jemanayanda02@hotmail.com>
+ * javascript file for AJAX scripts,
+ * 
+ */
+ function confirmDelete(){
+        
+        var response = confirm('Are you sure you want to delete this record?');
+        
+        if( response == false ){
+            return false;
+        }else{
+            return true;
+        }
+    }   
+$(document).ready(function(){
+    $('.error').hide();
+    $('#message').hide();
+    
+    //
+    
+    $('.list_tbl tr').css('border','1px dotted khaki');
+    $('.list_tbl tr:odd').css('background','whitesmoke');
+    $('.list_tbl tr:last').css('background','white');
+        
+  var base_url = 'http://localhost/cityharvest/index.php';
+    // 
+    // LOGIN FORM SCRIPT, 
+    // form at ../views/public/home_login.php         //
+ $('#log_btn').click(function(){
+     var username = $('input#username').val();
+     var password = $('input#password').val();
+          
+          if(username == '' || password == ''){
+              $('.error').show();
+              $('.error').html('Both Username and password are required.. <span class="cancel">x</span>');
+              
+              $('.cancel').click(function(){
+              $('.error').fadeOut(1800, function() {
+		 
+              }); 
+             });
+              return false;
+          }else{
+          
+  
+  /*   
+     var dataString = 'username='+ username;
+     //var post_url = base_url+"/welcome/verify_ajax";
+     alert('reach here!!');
+     $.ajax({  
+        type: "POST",  
+        url: "ajax",  
+        data: dataString,   
+        success: function(result){  
+
+         alert('success!!');   
+         $('#main').html('YES!!');
+//         $('#main').append(result.name);
+        },
+        error:function(){
+            $('#main').html('<div class="error"></div>');
+            $('.error').show();
+            $('.error').html('There is some errors in the script parsed..');
+            
+        }
+        
+        }); */
+          }
+    });
+
+    // ASSETS  FORMs SCRIPTs, 
+    // forms at ../views/inventory/invetory_edit.php
+    //          ../views/inventory/invetory_taking.php               //
+    $('#save_asset').click(function(){
+        
+        var asset = $('#asset').val();
+        var quantity = $('#quantity').val();
+        var status = $('#status').val();
+        var money_value = $('#monetory').val();
+        var description = $('#description').val();
+        var code = $('#asset_code').val();
+        var acq_mod = $('#acq_mod').val();
+                
+        if( (asset == '' || quantity == '' ) || ( status == '0' || code == '' ) || ( description == '' || acq_mod == '0') || ( money_value == '' || description == '') ){
+             $('.error').show();
+            // $('.error').html('<div class="alert alert-error"></div>');
+              $('.error').html('** All mandatory fields should be filled completely before submiting.. <span class="cancel">x</span>');
+              
+              $('.cancel').click(function(){
+              $('.error').fadeOut(1800, function() {
+		 
+              }); 
+             });
+             return false;    
+       }else{
+             return true;
+       }
+        
+        
+    });//end....
+    
+    // MEMBERS  FORMs SCRIPTs, 
+    // forms at ../views/members/member_edit.php
+    //          ../views/members/member_add.php               //
+    $('#save_member').click(function(){
+        
+        var fname = $('#fname').val();
+        var lname = $('#lname').val();
+        var sex = $('#sex').val();
+        var code_no = $('#code_no').val();
+        var residence = $('#residence').val();
+        var title = $('#title').val();       
+                
+        if( (fname == '' || lname == '' ) || ( sex == '0' || code_no == '' ) || ( residence == '' || title == '0') ){
+             $('.error').show();
+              $('.error').html('** All mandatory fields should be filled completely before submiting.. <span class="cancel">x</span>');
+              
+              $('.cancel').click(function(){
+              $('.error').fadeOut(1800, function() {
+		 
+              }); 
+             });
+             return false;    
+       }else{
+             return true;
+       }
+        
+        
+    });//end...
+    
+     // EXPENDITURE  FORMs SCRIPTs, 
+    // forms at ../views/expenditure/expenditure_edit.php
+    //          ../views/members/expenditure_add.php               //
+    $('#save_expenditure').click(function(){
+        
+        var category = $('#category').val();
+        var date = $('#from-datepicker').val();
+        var amount = $('#amount').val();
+        var description = $('#desc').val();      
+                
+        if( (category == '0' || date == '' ) || ( amount == '0' || description == '' ) ){
+             $('.error').show();
+              $('.error').html('** All mandatory fields should be filled completely before submiting.. <span class="cancel">x</span>');
+              
+              $('.cancel').click(function(){
+              $('.error').fadeOut(1800, function() {
+		 
+              }); 
+             });
+             return false;    
+       }else{
+             return true;
+       }
+        
+        
+    });//end...
+    
+     // ATTENDANCE  FORMs SCRIPTs, 
+    // forms at ../views/attendance/attendance_edit.php
+    //          ../views/attendance/attendance_add.php               //
+    $('#save_attendance').click(function(){
+       
+        var date = $('#from-datepicker').val();
+        var event = $('#event').val();
+        var place = $('#place').val();
+        var total = $('#total').val();
+                
+        if( (event == '' || date == '' ) || ( place == '' || total == '' ) ){
+             $('.error').show();
+              $('.error').html('** All mandatory fields should be filled completely before submiting.. <span class="cancel">x</span>');
+              
+              $('.cancel').click(function(){
+              $('.error').fadeOut(1800, function() {
+		 
+              }); 
+             });
+             return false;    
+       }else{
+             return true;
+       }
+        
+        
+    });//end...
+    
+    
+    
+    
+    
+    //actions performed
+    var message = "";
+    
+    function actionPerformed( message ){
+       $('#main').html('<div id="action_message"></div>'); 
+       $('#action_message').html(message);
+       $('#action_message').fadeIn(1100, function(){
+          
+        });
+       $('#action_message').fadeOut(1900, function(){
+          
+        });
+    }
+    
+    
+
+});

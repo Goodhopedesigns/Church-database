@@ -1,0 +1,57 @@
+<script type="text/javascript">
+     $(function() {
+       $( "#datepicker1" ).datepicker();
+     });
+  
+     $(function() {
+       $( "#datepicker2" ).datepicker();
+     });
+  </script>
+<?php
+	 $pdf_query = $query; // a variable for printing different reports on pdf......
+	
+	echo  form_open('giving/search');
+	echo "<div class='filter_div'>"
+       ." &nbsp;&nbsp; View by date ....<br/>";
+	$data = array('name'=> 'date1', 'id'=> 'datepicker1','class'=>'datepicker','placeholder'=>'Between Date 1','style'=>'margin-left:12px;','readonly'=> '','size' => 20);
+	echo "".form_input($data);
+	
+	$data = array('name'=> 'date2', 'id'=> 'datepicker2','class'=>'datepicker','placeholder'=>'And Date 2','readonly'=> '','size' => 20);
+	
+	echo  form_input($data)
+        ."</div>";
+	
+	//echo " CLICK ".anchor('members/memberListPdf/'.$query,'HERE')." TO PRINT PDF</td></tr>";
+		  $data = array('name' => 'search','align' => 'left', 'id' => 'search','class'=>'search_bar', 'placeholder' => 'Your keyword here..');
+	
+	
+	echo  "<div class='filter_div'>"
+        ."Search giving..<br/><div id = 'search_box'>"
+	.form_input($data).form_submit('giving/search','search','class=btn btn-primary')."</div>"
+        ."</div>";
+	 echo "<div class='display_action'>";
+        $excel = "<img src='".base_url()."images/excel.png' class='icon' >";
+        echo anchor('giving/export /'.$query,$excel);
+        $pdf = " <img src='".base_url()."images/pdf.png' class='icon' >";
+        echo $print = "<img src='".base_url()."images/print.png' class='icon' >";
+        echo anchor_popup('v/givingListPdf/'.$query,$pdf)         
+        ."</div>";
+	echo "<table border = '1' cellpadding = '0' cellspacing = '0' class='list_tbl'>";
+        echo "<tr><td colspan = '11' align = 'center'><center>".@$links."</center></td></tr>";
+	echo "<tr><th>S/N</th><th>MEMBER CODE</th><th>MEMBER NAME</th><th>CATEGORY</th><th>DATE</th><th>AMOUNT</th><th colspan = '1'>ACTION</th>
+		  </tr>";
+				$index = 0;
+			foreach($answer  as $key => $list)
+				{
+					$index++;
+echo "<tr><td>".$index."</td>";
+					echo "<td>".$list['membercode']."</td>";
+                                        echo "<td>".$list['name']."</td>";
+					echo "<td>".$list['giving_category']."</td><td>".$list['date']."</td><td>".$list['amount']."</td>";
+					echo "<td>".anchor('giving/editGiving/'.$list['id'],'edit')."</td>";
+					//echo "<td>".anchor('giving/deleteGiving/'.$list['id'],'delete')."</td></tr>";
+				}       
+                                        echo "<tr><td colspan = '11' align = 'center'><center>".@$links."</center></td></tr>";
+					echo "<tr><td colspan = '10' align = 'center'>".anchor('giving/addGiving','ADD GIVING INFORMATION    ')."&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp". anchor('givingCategory/addCategory','    ADD CATEGORY')."</td></tr>";
+			  echo "</table>";
+?>

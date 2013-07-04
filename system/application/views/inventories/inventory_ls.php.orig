@@ -1,0 +1,75 @@
+<div id="message" >
+    Status message..
+</div>
+<div class="error">
+    
+</div>
+<script type="text/javascript">
+     $(function() {
+       $( "#datepicker1" ).datepicker();
+     });
+  
+     $(function() {
+       $( "#datepicker2" ).datepicker();
+     });
+  </script>
+<?php
+	 $pdf_query = $query; // a variable for printing different reports on pdf......
+	
+	echo  form_open('inventory/search');
+	echo "<div class='filter_div'>"
+        ."View by Acquisition mode...........    &nbsp;&nbsp; View by date purchased/donated....<br/>";
+	$data = array('selectone' => '--select one--','purchased' => 'PURCHASED', 'donated' => 'DONATED', 'hire purchased' => 'HIRE PURCHASED');
+	echo  form_dropdown('acquisition_mod',@$data);
+			$data = array('name'=> 'date1', 'id'=> 'datepicker1','class'=>'datepicker','placeholder'=>'Between Date 1','style'=>'margin-left:12px;','readonly'=> '','size' => 20);
+	echo "".form_input($data);
+	
+	$data = array('name'=> 'date2', 'id'=> 'datepicker2','class'=>'datepicker','placeholder'=>'And Date 2','readonly'=> '','size' => 20);
+	
+	echo  form_input($data)
+        ."</div>";
+	
+	//echo " CLICK ".anchor('members/memberListPdf/'.$query,'HERE')." TO PRINT PDF</td></tr>";
+		  $data = array('name' => 'search','align' => 'left', 'id' => 'search','class'=>'search_bar', 'placeholder' => 'Your keyword here..');
+	
+	
+	echo  "<div class='filter_div'>"
+        ."Search Assets<br/><div id = 'search_box'>"
+	.form_input($data).form_submit('inventory/search','search','class=btn btn-primary')."</div>"
+        ."</div>";
+        
+        echo "<div class='display_action'>"
+        ."<img src='".base_url()."images/excel.png' class='icon' > <img src='".base_url()."images/pdf.png' class='icon' >"
+        ."<img src='".base_url()."images/print.png' class='icon' >"        
+        ."</div>";
+echo "<table border = '1' class='list_tbl'>";
+echo "<tr><td colspan = '11' align = 'center'><center>".@$links."</center></td></tr>";
+echo "<tr>";
+        echo "<th>S/N</th><th>ASSET NAME</th><th>ASSET CODE</th><th>QUANTITY</th>
+              <th>STATUS<th>ACQUISITION MODE</th></th><th>BOUGHT/DONATED BY</th><th>MONETARY VALUE</th>
+              <th colspan=2>ACTION</th>";
+echo "</tr>";
+        $index = 0;
+        foreach($answer as $key => $list)
+        {
+            $index++;
+          echo "<tr>"; 
+          echo "<td>".$index."</td>";
+          echo "<td>".$list['itemname']."</td>";
+          echo "<td>".$list['asset_code']."</td>";
+          echo "<td align = 'right'>".$list['quantity']."</td>";
+          echo "<td>".$list['status']."</td>";
+          echo "<td>".$list['acquisition_mode']."</td>";
+          echo "<td>".$list['bought_donated']."</td>";
+          echo "<td align ='right'>".$list['monetary_value']."</td>";
+          echo "<td>".anchor('inventory/editInventoryFrm/'.$list['id'],'Edit')."</td>";
+          echo "<td>".anchor('inventory/deleteInventoryAsset/'.$list['id'],'Delete','onclick="return confirmDelete()"')."</td>";
+          echo "</tr>";
+        }
+
+echo "<tr><td colspan = '11' align = 'center'><center>".@$links."</center></td></tr>";
+echo "<tr>";
+echo "<td colspan ='11' align = 'center'>".anchor('inventory/inventoryTakingFrm','ADD NEW ASSET')."</td>";
+echo "</tr>";
+echo "</table>";
+?>

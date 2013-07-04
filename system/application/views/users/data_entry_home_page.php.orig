@@ -1,0 +1,9 @@
+	<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+	   <li><?php  //echo anchor('','home').'  '; ?></li>
+	   <li> <?php  echo anchor('members/index','Manage Members','tabindex=-1'); ?></li>	
+	   <li> <?php  echo anchor('expenditure/index','Manage Expenditures','tabindex=-1'); ?></li>
+	   <li><?php  echo anchor('inventory/index','Manage Inventories').'  '; ?></li>
+	   <li><?php  echo anchor('attendance/manage','Manage Attendance').'  '; ?></li>
+	   <li><?php  echo anchor('giving/manage','Manage Giving').'  '; ?></li>
+	   <li><?php  echo anchor('visitors/index','Manage Visitors').'  '; ?></li>   
+	</ul>

@@ -1,0 +1,59 @@
+
+
+<script type="text/javascript">
+     $(function() {
+       $( "#datepicker1" ).datepicker();
+     });
+  
+     $(function() {
+       $( "#datepicker2" ).datepicker();
+     });
+  </script>
+<?php
+	 $pdf_query = $query; // a variable for printing different reports on pdf......
+	
+	echo  form_open('members/search');
+	echo "<div class='filter_div'>"
+       ." &nbsp;&nbsp; View by date ....<br/>";
+	$data = array('name'=> 'date1', 'id'=> 'datepicker1','class'=>'datepicker','placeholder'=>'Between Date 1','style'=>'margin-left:12px;','readonly'=> '','size' => 20);
+	echo "".form_input($data);
+	
+	$data = array('name'=> 'date2', 'id'=> 'datepicker2','class'=>'datepicker','placeholder'=>'And Date 2','readonly'=> '','size' => 20);
+	
+	echo  form_input($data)
+        ."</div>";
+	
+	//echo " CLICK ".anchor('members/memberListPdf/'.$query,'HERE')." TO PRINT PDF</td></tr>";
+		  $data = array('name' => 'search','align' => 'left', 'id' => 'search','class'=>'search_bar', 'placeholder' => 'Your keyword here..');
+	
+	
+	echo  "<div class='filter_div'>"
+        ."Search attendance..<br/><div id = 'search_box'>"
+	.form_input($data).form_submit('attendance/search','search','class=btn btn-primary')."</div>"
+        ."</div>";
+	 echo "<div class='display_action'>";
+        $excel = "<img src='".base_url()."images/excel.png' class='icon' >";
+        echo anchor('attendance/export /'.$query,$excel);
+        $pdf = " <img src='".base_url()."images/pdf.png' class='icon' >";
+        echo $print = "<img src='".base_url()."images/print.png' class='icon' >";
+        echo anchor_popup('attendance/attendanceListPdf/'.$query,$pdf)         
+        ."</div>";
+	
+	echo "<table border = '1' cellpadding = '0' cellspacing = '0' align = 'center' class='list_tbl'>";//id, date, no_males, no_ females, no_children
+        echo "<tr><td colspan = '11' align = 'center'><center>".@$links."</center></td></tr>";
+	echo "<tr><th>S/N</th><th>DATE</th><th>NUMBER OF MALES</th><th>NUMBER OF FEMALES</th><th>NUMBER OF CHILDREN</th><th>ACTION</th></tr>";
+				$index = 0;
+			foreach($answer  as $key => $list)//id, date, no_males, no_ females, no_ children
+				{
+					$index++;
+					echo "<tr><td>".$index."</td>";
+					echo "<td>".$list['date']."</td>";
+					echo "<td>".$list['no_males']."</td><td>".$list['no_females']."</td><td>".$list['no_children']."</td>";
+					echo "<td>".anchor('attendance/editAttendance/'.$list['id'],'edit')."</td>";
+					//echo "<td>".anchor('attendance/deleteAttendance/'.$list['id'],'delete')."</td>";
+				}       
+                                        echo "<tr><td colspan = '11' align = 'center'><center>".@$links."</center></td></tr>";
+					echo "<tr><td colspan = '11' align = 'center'>".anchor('attendance/addAttendance','ADD NEW ATTENDANCE')."</td></tr>";
+			  echo "</table>";
+	
+?>

@@ -1,0 +1,217 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* Resets and Helpers - Based on the Yahoo! YUI CSS Foundation */
+
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,input,textarea,p,blockquote,th,td { 
+	margin:0;
+	padding:0;
+}
+table {
+	border-collapse:collapse;
+	border-spacing:0;
+	width:100%;
+}
+img { 
+	border:0;
+}
+address,caption,cite,code,dfn,th,var {
+	font-style:normal;
+	font-weight:normal;
+}
+ol,ul {
+	list-style:none;
+}
+caption,th {
+	text-align:left;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-size:100%;
+	font-weight:normal;
+}
+q:before,q:after {
+	content:'';
+}
+abbr,acronym { 
+	border:0;
+}
+
+.clear {
+	clear:both;
+}
+html {
+	overflow:-moz-scrollbars-vertical;
+	overflow-x:auto;
+}
+
+/*********************/
+/* Page Level Styles */
+body {
+	background:#FFFFFF;
+	color:#333333;
+	font-family:Verdana, Geneva, sans-serif;
+	font-size:11px;
+	margin:10px;
+}
+
+
+h1 {
+	color:#881111;
+	font-size:18px;
+	margin-bottom:3px;
+}
+
+.navigation {
+	margin-bottom:30px;
+}
+
+p {
+	margin-bottom:13px;
+}
+
+#error_message p,
+#success_message p {
+	margin-bottom:3px;
+}
+
+#error_message {
+	color:red;
+	margin-top:13px;
+}
+
+#success_message {
+	color:green;
+	margin-top:13px;
+}
+
+th {
+	color:#000;
+	font-size:12px;
+	font-weight:bold;
+	padding:4px 0 4px 4px;
+}
+
+.table_header {
+	background-color:#DF8520;
+}
+
+.odd_row {
+	background-color:#DDDDDD;
+}
+
+td {
+	vertical-align:top;
+	padding:7px 4px 7px 4px;
+}
+
+label {
+	font-weight:bold;
+	margin-right:10px;
+}
+
+a {
+	color:#144444;
+	text-decoration:underline;
+}
+
+input {
+	font-family:Verdana, Geneva, sans-serif;
+	font-size:12px;
+}
+
+/*********************/
+/* Activity Listings */
+
+.requested_activity {
+	border-color:#DF8520; 
+	border-style:solid; 
+	border-width:thin;
+	margin-bottom:18px; 
+}
+
+caption {
+	background-color:#DF8520;
+	color: #333333;
+	font-size:13px;
+	font-weight:bold;
+	padding:3px 0px 3px 0px;
+}
+
+.table_header_edit {
+	background-color:#FFCC33;
+}
+
+.odd_row_edit {
+	background-color:#FFCC33;
+}
+
+.date_column {
+	display:block;
+	width:100px;
+}
+
+.activity_name_column {
+	display:block;
+	width:200px;
+}
+
+.address_column {
+	display:block;
+	width:150px;
+}
+
+.check {
+	color:red;
+}
+
+.help-text {
+	font-size:9px;
+	font-style:italic;
+	white-space:nowrap;
+}
+
+/***************/
+/* Autosuggest */
+
+.autosuggest {
+	border:1px solid #000000;
+	display:none;
+	overflow:hidden;
+	padding:0px;
+	position:absolute;
+	width:200px;
+	z-index:1;
+}
+
+.autosuggest ul li {
+	background-color:#FFFFFF;
+	cursor:pointer;
+	display:block;
+	list-style:none;
+	padding:5px;
+	white-space:nowrap;
+}
+
+.autosuggest ul li:hover {
+	background-color:#316AC5;
+	color:#FFFFFF;
+}
+
+.loading{
+	background-image:url('../img/indicator.gif');
+	background-position:right;
+	background-repeat:no-repeat;
+}
+
+.autosuggest_input {
+	width:200px;
+}
+
+.table_header_add {
+	background-color:#FFCC66;
+}
+
+.odd_row_add {
+	background-color:#FFCC66;
+}
+

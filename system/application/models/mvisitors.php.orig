@@ -1,0 +1,78 @@
+<?php
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of mvistors
+ *
+ * @author simon
+ */
+class mvisitors extends CI_Model{
+    function get_all_vistors(){
+      $data = array();
+      $Q = $this -> db -> get('visitors');
+            if($Q->num_rows()>0){
+                
+           foreach($Q->result_array() as $row){
+               $answer['name'] = $row['fname']." ".substr($row['mname'],0,1)." ".$row['surname'];
+               $row['name'] = $answer['name'];
+               $data[] = $row;
+           }
+       }
+       $Q ->free_result();
+       return $data;
+   }
+   function get_visitor_by_id($id){
+        $data = array();
+       $this -> db -> where('id',$id);
+       $Q = $this -> db -> get('visitors');
+       if($Q->num_rows()>0){
+           $data = $Q->row_array();
+       }
+       $Q->free_result();
+       return $data;
+   }
+   function add_vistors(){	
+       $college = $this -> input -> post('college');
+       if( $college ==""){
+           $college = "NONE";
+       }
+       $values = array(
+                        'id' => '',
+                        'fname' => $this -> input -> post('fname'),
+                        'mname' => $this -> input -> post('mname'),
+                        'surname' => $this -> input -> post('surname'),
+                        'sex' => $this -> input -> post('sex'),
+                        'title' => $this -> input -> post('title'),
+                        'email' => $this -> input -> post('email'),
+                        'residence' => $this -> input -> post('residence'),
+                        'profession' => $this -> input -> post('profession'),
+                        'date_visited' => $this -> input -> post('date_visited'),
+                        'phone' => $this -> input -> post('phone'),
+                        'college' => $college
+                       );	
+       $this -> db -> insert('visitors',$values);
+   }
+   function edit_visitor($id){
+        $values = array(
+                        'fname' => $this -> input -> post('fname'),
+                        'mname' => $this -> input -> post('mname'),
+                        'surname' => $this -> input -> post('surname'),
+                        'sex' => $this -> input -> post('sex'),
+                        'title' => $this -> input -> post('title'),
+                        'email' => $this -> input -> post('email'),
+                        'residence' => $this -> input -> post('residence'),
+                        'profession' => $this -> input -> post('profession'),
+                        'date_visited' => $this -> input -> post('date_visited'),
+                        'phone' => $this -> input -> post('phone'),
+                        'college' => $this -> input -> post('college')
+                       );	
+        $this -> db -> where('id',$id);
+        $this -> db -> update('visitors',$values);
+   }
+}
+
+?>

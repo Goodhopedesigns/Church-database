@@ -1,0 +1,140 @@
+<?php
+class musers extends CI_Model{
+   function get_all_users(){
+      $data = array();
+      $Q = $this -> db -> get('users');
+            if($Q->num_rows()>0){
+                
+           foreach($Q->result_array() as $row){
+               $data[] = $row;
+           }
+       }
+       $Q ->free_result();
+       return $data;
+   }
+   
+   function get_user_by_id($id)
+   {//get_user_by_id
+        $data = array();
+        $this -> db -> where('id',$id);
+         $Q = $this -> db -> get('users');
+        if($Q->num_rows()>0){
+           $data = $Q->row_array();
+        }
+        $Q->free_result();
+        return $data;
+   }
+   
+   function verifyUser(){
+       $data = array();
+        $u = $this-> input-> post('username');
+		$pw = md5($this-> input-> post('password'));
+        $this->db -> where('name',$u);
+        $this -> db -> where('password',$pw);
+        $Q = $this -> db -> get('users');
+        if($Q -> num_rows() > 0){
+            $data = $Q -> row_array();
+        }
+        $Q -> free_result();
+        return $data;
+   }
+   
+   function addUsers()
+   {
+                $pwd = $this ->input->post('name');
+                $password1 = substr($pwd,0,3).'123';
+                $password = md5(strtolower($password1));
+		$values = array
+		(
+			'name' => $this ->input->post('name'),
+			'password' => $password,
+			'role' => $this ->input->post('user_role'),
+                        'sex'=>$this ->input->post('sex'),
+                        'fullname'=>$this ->input->post('fname')
+		);
+		$answer = $this -> db -> insert('users',$values);
+		if($answer)
+			{
+				return TRUE;
+			}
+		else
+		{
+			return FALSE;
+		}
+   }
+   
+   function resetPassword($userid,$newpassword)
+   {
+		$values = array(
+						'password' => $newpassword
+						);
+		$this -> db -> where('id',$userid);	
+		$this -> db -> update('users',$values);
+   }
+   
+   function get_users_dropdown()
+	{
+		$data = array();
+                $this -> db -> select('fullname');
+		$this -> db -> from('users');
+		$Q = $this -> db -> get();
+		if($Q -> num_rows() > 0)
+			{
+				$data[0] = ' -- SELECT -- ';
+				foreach($Q -> result_array() as $user)
+					{
+						$data[$user['id']] = $user['name'];
+					}
+			}
+			$Q -> free_result();
+			return $data;
+	}
+	
+	function get_password_by_userid($userid){
+		$this -> db -> where('id',$userid);
+		$Q = $this -> db -> get('users');
+		if($Q -> num_rows()> 0){
+			$data =$Q ->row_array();
+			$password = $data['password'];
+		}
+		$Q -> free_result();
+		return $password;
+	}
+        
+           function getUserById( $id )
+        {
+            $data = array();
+            $this -> db  -> where('id', $id);
+            $Q =  $this -> db -> get('users');
+            if ($Q ->  num_rows() > 0)
+            {
+            $data =  $Q ->  row_array();
+             }
+	 $Q -> free_result();
+	 return $data;
+         }//end getUserById
+
+        
+        function get_member_by_id_1($id){
+        $data = array();
+       $this -> db -> where('id',$id);
+       $Q = $this -> db -> get('members');
+       if($Q->num_rows()>0){
+            $data = $Q->row_array();
+		       $answer = $this -> mwelcome_group->get_welcome_grp_by_id($data['welcome_groupno']);
+			$data['welcome_groupname'] = $answer['name'];
+			$answer1 = $this -> mrelationship -> get_relationship_by_id($data['relationship']);
+                        if(isset($answer1['id']))
+                            {   
+                                $data['relationship_name'] = $answer1['relationship'];
+                                $answer2 = $this -> mmembers -> get_member_by_id($data['relatedto']);
+                                $data['related_to'] = $answer2['fname']." ".substr($answer2['mname'],0,1)." ".$answer2['surname'];
+                            }
+       }
+       $Q->free_result();
+       return $data;
+   }
+        
+}
+
+?>

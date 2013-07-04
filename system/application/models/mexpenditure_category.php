@@ -1,0 +1,80 @@
+<?php
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of mexpenditure_category
+ *
+ * @author simon
+ */
+class mexpenditure_category extends CI_Model{
+    /*function mexpenditure_category(){
+        parent::CI_Model();
+    }*/
+    function get_all_expend_category(){
+        $data = array();
+        $this -> db -> where('status','Active');
+        $Q = $this ->db -> get('expenditure_category');
+        if($Q -> num_rows()>0){
+            foreach($Q -> result_array() as $row){
+                $data[] = $row;
+            }
+        }
+        $Q -> free_result();
+        return $data;
+    }
+    function get_expend_category_by_id($id){
+        $data = array();
+        $this -> db -> where('id',$id);
+        $this -> db -> where('status','Active');
+        $Q = $this ->db -> get('expenditure_category');
+        //echo $this -> db -> last_query();exit;
+         if($Q ->num_rows() > 0){
+             foreach ($Q-> result_array() as $row){
+               $data = $row;
+           }
+       }
+            $Q -> free_result();
+            return $data;
+         }
+    function get_category_dropdown()
+	{
+		$data = array();
+                $this -> db -> where('status','Active');
+		$this -> db -> from('expenditure_category');
+		$Q = $this -> db -> get();
+		if($Q -> num_rows() > 0)
+			{
+				$data[0] = ' -- SELECT ONE -- ';
+				foreach($Q -> result_array() as $answer)
+					{
+						$data[$answer['id']] = $answer['category'];
+					}
+			}
+			$Q -> free_result();
+			return $data;
+	}
+        function add_expenditure_category(){
+            echo $this -> input -> post('category');
+            $values = array('id' => '',
+                             'category' => $this -> input -> post('category')
+                            );
+            $this -> db -> insert('expenditure_category',$values);
+        }
+        
+       function edit_expend_category($id){
+           $values = array('category' => $this -> input -> post('category'));
+           $this -> db -> where('id',$id);
+           $this -> db -> update('expenditure_category',$values);
+       }
+       function delete_expend_category($id){
+           $values = array('status' => 'Inactive');
+           $this -> db -> where('id',$id);
+           $this -> db -> update('expenditure_category',$values);
+       }
+}
+
+?>

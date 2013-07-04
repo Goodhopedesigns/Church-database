@@ -1,0 +1,18 @@
+<!-- Author: Jeremiah < Jemanyanda02@hotmail.com > -->
+        
+     <div id="welcome_home">
+       Cityharvest.......
+     </div>    
+     <div id="login_form"> 
+       <center>
+        <form name="register_form" method="POST" action="index.php/welcome/verify" style="width:100%;" >
+            <div id="err_msg" stye="color:red;" class="error"><?= @$_SESSION['err_msg']; ?></div>
+          <input type="text" name="username" id="username" class="input-xlarge" placeholder="Username" ><br/>
+          <input type="password" name="password" id="password" class="input-xlarge" placeholder="Password" ><br/>
+          <input type="checkbox" name="remember" > <i><span id="">Remember my password</span></i><br/> 
+          <input type="submit" name="reg_btn" id="log_btn" class="btn" placeholder="" value="Login" >
+          <input type="reset" name="reg_btn" class="btn" placeholder="" value="Clear" ><br/>
+          <?php echo anchor('user/password_recovery','Forgot your password?'); ?>
+        </form>
+       </center>
+      </div>  

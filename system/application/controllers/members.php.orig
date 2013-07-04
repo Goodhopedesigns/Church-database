@@ -1,0 +1,375 @@
+<?php
+	
+	if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Members extends CI_Controller {
+	
+	function Members(){
+			parent::__construct();
+			session_start();
+			if(!isset($_SESSION['user'])){redirect('index.php/welcome/index','refresh');}
+				$this -> load -> library('mpdf');
+				$this -> load -> library('pagination');
+				$this -> load -> library('javascript');
+				$this -> load -> library('session');
+				//$this -> load -> library('jquery');
+				
+			}
+	public function index()
+		{
+                $data['header'] = 'LIST OF ALL CITYHARVEST CHURCH MEMBERS';
+                $data['title'] = 'CIS | member list';
+                $data['main'] = 'members/members_ls';
+                //$data['answer'] = $this -> mmembers -> get_all_members();
+                // pagination..........................
+
+                $config = array();
+	        $config["base_url"] = base_url() . "members/index";
+	        $config["total_rows"] = $this->mmembers->record_count();
+	        $config["per_page"] = 10;
+	        $config["uri_segment"] = 3;
+                $config['num_tag_open'] = '<div class="link_num">';
+                $config['num_tag_close'] = '</div>';
+                $config['prev_tag_open'] = '<div class="link_num">';
+                $config['prev_tag_close'] = '</div>';
+                $config['next_tag_open'] = '<div class="link_num">';
+                $config['next_tag_close'] = '</div>';
+	 
+	        $this->pagination->initialize($config);
+	 
+	        $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
+	        $data["answer"] = $this->mmembers->get_all_members($config["per_page"], $page);
+                $data["links"] = $this->pagination->create_links();
+                $this -> load ->vars($data);
+                $this->load->view('generic/template');
+		}
+	function addingMember() // adding member to database.
+		{	 if(isset($_POST['submit']))
+                {
+			$email = $this -> input -> post('email');
+			$phone = $this -> input -> post('phone');
+			$add = $this -> mmembers -> member_add();
+			$memberid = $this -> mmembers -> get_members_by_mail($email);
+			$this -> mmember_phone -> member_phone_add($memberid,$phone);
+			redirect('members/index','refresh');
+                }
+                else
+                {
+                    redirect('members/index','refresh');
+                }
+		}
+	function addmember()  // add member form.
+		{
+			$data['answer'] = $this->mwelcome_group->get_welcome_grp_dropdown();
+			$data['related'] = $this->mmembers->get_members_dropdown();
+			$data['relationship'] = $this->mrelationship->get_relationship_dropdown();
+			$data['header'] = "ADD NEW MEMBER TO THE CHURCH";
+            $data['title'] = 'CIS | adding member';
+			$data['library_src'] = $this->jquery->script();
+			$data['script_head'] = $this->jquery->_compile();
+			$data['main'] = 'members/members_add';
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}	
+	function editMember($memberid) // editing form..
+		{
+			$data['answer'] = $this -> mmembers -> get_member_by_id_1($memberid);
+			$data['welcome'] = $this->mwelcome_group->get_welcome_grp_dropdown();
+			$data['related'] = $this->mmembers->get_members_dropdown();
+			$data['relationship'] = $this->mrelationship->get_relationship_dropdown();
+			$data['phone'] = $this -> mmember_phone -> get_member_phone_by_memberid($memberid);
+			$data['header'] = "EDIT MEMBER'S INFORMATION";
+                        $data['title'] = 'CIS | editing member';
+			$data['main'] = 'members/members_edit';
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}
+	function editingMember($memberid,$relatedto,$relationship,$welcome)
+		{
+                        if(isset($_POST['submit']))
+                        {
+                            $values = array(
+                                                            'related' => $relatedto,
+                                                            'relationship' => $relationship,
+                                                            'welcome' => $welcome
+                                                            );
+                            $phone = $this -> input -> post('phone');
+                            $this -> mmembers -> edit_member($memberid,$values);
+                            $this -> mmember_phone -> member_phone_edit($memberid,$phone);
+                            redirect('members/index','refresh');
+                        }
+                       else
+                       {
+                           redirect('members/index','refresh');
+                       }
+		}
+		
+	function deleteMember($memberid)
+		{
+			$this -> mmembers -> delete_member($memberid);
+			redirect('members/index','refresh');
+		}
+		
+        function memberView(){
+			$data['title'] = "CIS | MEMBERS VIEW";
+			$data['header'] = 'LIST OF ALL CITYHARVEST CHURCH MEMBERS';
+            $data['title'] = 'CIS | member list';
+			$data['query'] = 'ALL MEMBERS';
+			$data['main'] = 'members/members_ls_report';
+			
+			// pagination to control the extreme listing.........................
+			
+			$config = array();
+	        $config["base_url"] = base_url() . "members/memberView";
+	        $config["total_rows"] = $this->mmembers->record_count();
+	        $config["per_page"] = 10;
+	        $config["uri_segment"] = 3;
+                $config['num_tag_open'] = '<div class="link_num">';
+                $config['num_tag_close'] = '</div>';
+	        $config['prev_tag_open'] = '<div class="link_num">';
+                $config['prev_tag_close'] = '</div>';
+                $config['next_tag_open'] = '<div class="link_num">';
+                $config['next_tag_close'] = '</div>';
+                $this->pagination->initialize($config);
+	        $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
+	        $data["answer"] = $this->mmembers->get_all_members($config["per_page"], $page);
+			$data["links"] = $this->pagination->create_links();
+            $data['welcome'] = $this -> mwelcome_group -> get_welcome_grp_dropdown();
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+	}	
+	function search(){ 
+						
+			if(isset($_POST['search_go'])){
+						$seacrh_by = $this -> input -> post('search_by');
+						redirect('members/searchBy/'.$seacrh_by,'refresh');
+						} 
+		
+		if(isset($_POST['date_search'])){
+				$date1 = $this -> input -> post('date1');
+				$date2 = $this -> input -> post('date2');
+				if($date1 > $date2){
+					$data['header'] = "INVALID DATE RANGE SPECIFIED";
+					$data['title'] = "CIS | search error";
+					$data['main'] = 'members/members_ls_report';
+					$data['welcome'] = $this -> mwelcome_group -> get_welcome_grp_dropdown();
+					$data['answer'] = $this -> mmembers -> get_all_members();
+					$this -> load ->vars($data);
+					$this->load->view('generic/template');
+				}
+				elseif(substr($date1,2,8) > date("y-m-d") || substr($date1,2,8) > date("y-m-d")){
+					$data['header'] = "THE RANGE SHOULD NOT EXCEED THE CURRENT DATE";
+					$data['title'] = "CIS | search error";
+					$data['main'] = 'members/members_ls_report';
+					$data['welcome'] = $this -> mwelcome_group -> get_welcome_grp_dropdown();
+					$data['answer'] = $this -> mmembers -> get_all_members();
+					$this -> load ->vars($data);
+					$this->load->view('generic/template');
+				}
+				else
+				{
+					$data['title'] = "CIS | search results";
+					$data['answer'] = $this->mmembers->get_members_by_dates($date1,$date2);
+					$data['query'] = "JOINED DATES";
+					$data['date1'] = $date1;
+					$data['date2'] = $date2;
+					$data['header'] = "MEMBERS JOINED BETWEEN ".$date1." AND ".$date2." ARE ".$data['answer']['total_members']." MEMBERS" ;
+					$data['main'] = 'members/members_ls_report';
+					$data['welcome'] = $this -> mwelcome_group -> get_welcome_grp_dropdown();
+					$this -> load ->vars($data);
+					$this->load->view('generic/template');
+				}
+		}
+		elseif(isset($_POST['search_welcome'])){  
+			$welcome = $this -> input -> post('welcome_goupno');
+			$data['welcome_groupno'] = $welcome;
+			//$data['answer'] = $this -> mmembers -> get_member_byWelcomeGrp($welcome);
+			
+				// pagination goes here..............................
+				
+			$config = array();
+	        $config["base_url"] = base_url() . "index.php/members/search";
+	        $config["total_rows"] = $this->mmembers->record_count_by_welcome($welcome);
+	        $config["per_page"] = 5;
+	        $config["uri_segment"] = 3;
+	        $this->pagination->initialize($config);
+	        $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
+	        $data["answer"] = $this->mmembers->get_member_byWelcomeGrp($welcome,$config["per_page"], $page);// the passed ARGs are welcome_group id and the record offsets....
+			$data["links"] = $this->pagination->create_links();
+			
+				// end of pagination ................................
+			$welcome_grp_name =  $this -> mwelcome_group -> get_welcome_grp_by_id($welcome);
+			$welcome = $welcome_grp_name['name']." [ ".$welcome_grp_name['meeting_place']." ]";
+			$data['query'] = "WELCOME GROUP";
+			$data['title'] = "CIS | search results";
+			$data['header'] = "THERE ARE ".$data['answer']['total_members']." MEMBERS WHO BELONG TO ".strtoupper($welcome)." WELCOME GROUP";
+			$data['welcome'] = $this -> mwelcome_group -> get_welcome_grp_dropdown();
+			$data['main'] = 'members/members_ls_report';
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}
+		elseif(isset($_POST['search_member'])){
+			$keyword = $this -> input -> post('search');
+			$data['title'] = "CIS | search results";
+			$data['answer'] = $this -> mmembers -> search_member($keyword);
+			$data['header'] = "SEARCH RESULTS FOR ". strtoupper($keyword);
+			$data['welcome'] = $this -> mwelcome_group -> get_welcome_grp_dropdown();
+			$data['main'] = 'members/members_ls_report';
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}
+	 }
+	
+       function searchBy($seacrh_by){
+		if($seacrh_by == 1){
+			$data['search_by'] = 'welcome_grp';
+		}
+		elseif($seacrh_by == 2){
+			$data['search_by'] = 'dates_btn';
+		}
+		else{
+			// on error submit;
+		}
+			$data['query'] = 'ALL MEMBERS';
+			$data['main'] = 'members/members_ls_report';
+            $data['welcome'] = $this -> mwelcome_group -> get_welcome_grp_dropdown();
+			//	pagination goes here................
+			$config = array();
+	        $config["base_url"] = base_url() . "index.php/members/memberView";
+	        $config["total_rows"] = $this->mmembers->record_count();
+	        $config["per_page"] = 5;
+	        $config["uri_segment"] = 3;
+	        $this->pagination->initialize($config);
+	        $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
+	        $data["answer"] = $this->mmembers->get_all_members($config["per_page"], $page);
+			$data["links"] = $this->pagination->create_links();
+            $data['welcome'] = $this -> mwelcome_group -> get_welcome_grp_dropdown();
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+	 }
+	 
+	function export()
+	 {
+		$this -> load -> helper('download');
+		$csv = $this -> mmembers -> export_members();
+		$name = "Members_export_list.csv";
+		force_download($name,$csv);
+		redirect('members/memberView','refresh');
+	 }
+	
+        function import(){
+		
+		if($this->input->post('submit'))
+		{
+			if($this -> input -> post('csvinit'))
+			{
+					$data['csv'] = $this -> mmembers -> importCsv();
+					if(! isset($data['csv']['error'])){ 
+								$data['header'] = "YOU ARE ABOUT TO UPLOAD THE FOLLOWING LIST TO THE DATABASE.";
+								$headers[0] = 'id';
+								$headers[1]	= 'fname';		
+								$headers[2]	= 'mname';
+								$headers[3] = 'surname';
+								$headers[4] = 'sex';
+								$headers[5] = 'title';
+								$headers[6] = 'email';
+								$headers[7] = 'residence';
+								$headers[8] = 'code_no';
+								$headers[9] = 'welcome_groupno';
+								$headers[10] = 'profession';
+								$headers[11] = 'date_joined';
+								$headers[12] = 'status';
+								$headers[13] = 'relationship';
+								$headers[14] = 'relatedto';
+							$data['dbheaders'] = $headers;
+							$data['title'] = "CIS | preview Import";
+							$data['main'] = "members/members_ls_csv";
+							$this -> load -> vars($data);
+							$this -> load -> view('generic/template');
+						}
+						elseif(! isset($data['csv'])){
+						
+							$data['header'] = "PROBLEMS WERE DETECTED WHILE UPLOADING";
+							$data['title'] = "CIS | Import errors";
+							$data['main'] = "members/members_import_errors";
+							$this -> load -> vars($data);
+							$this -> load -> view('generic/template');
+								}
+						else
+						{	
+							$data['header'] = $data['csv']['error'];
+							$data['title'] = "CIS | Import errors";
+							$data['main'] = "members/members_import_errors";
+							$this -> load -> vars($data);
+							$this -> load -> view('generic/template');
+						}
+				}
+				elseif($this -> input -> post('csvgo')){
+					unset($_POST['submit']);
+					unset($_POST['csvgo']);
+					$values = $_POST;
+					$add = $this -> mmembers -> add_multiple_members($values);
+					if($add){
+						$data['title'] = "CIS | MEMBERS VIEW";
+						$MEMBER = 'MEMBER';
+						if(count($values) > 1){$MEMBER.'S';}
+						$data['header'] = 'YOU HAVE SUCCESSFULLY ADDED '.count($values).' NEW '.$MEMBER;
+						$data['title'] = 'CIS | member list';
+						$data['main'] = 'members/members_ls';
+						$data['welcome'] = $this -> mwelcome_group -> get_welcome_grp_dropdown();
+						$data['answer'] = $this -> mmembers -> get_all_members();
+						$this -> load ->vars($data);
+						$this->load->view('generic/template');
+					}
+				}
+			 
+			}
+			else
+			{
+				redirect('index.php/members/index','refresh');
+			}
+	    }
+	function memberTemplateDownload(){
+		$this -> load -> helper('download');
+		$csv = $this -> mmembers -> get_memberTemplate();
+		$name = "Members_export_template.csv";
+		force_download($name,$csv);
+		redirect('members/index','refresh');
+		}
+	function memberListPdf()
+		{	
+			 
+			 $data['answer'] = $this -> mmembers -> get_all_members_pdf();
+			 $data['header'] = "LIST OF ALL CITYHARVEST CHURCH MEMBERS";
+			 $data['title'] = 'CIS | members list PDF ';
+			 //$this -> load -> library('mpdf');	loaded in the constructor.....	
+			 $html = $this->load->view('members/member_pdf', $data, TRUE);		
+			 $this -> mpdf -> WriteHTML($html);
+			 $this -> mpdf -> Output();
+		}
+	
+        function memberListPdfBywelGrp($welgrp){
+		 $data['answer'] = $this -> mmembers -> get_member_byWelcomeGrp($welgrp);
+		 $data['answer'][0]['welcome_groupno'];
+		 $data['title'] = 'CIS | members list PDF ';
+		 $data['header'] = "LIST OF ALL CITYHARVEST CHURCH MEMBERS";
+		 $data['header'] = "THERE ARE ".$data['answer']['total_members']." MEMBERS WHO BELONG TO ".strtoupper($data['answer'][0]['welcome_groupno'])." WELCOME GROUP";
+		 $this -> load -> library('mpdf');	
+		 $html = $this->load->view('members/member_pdf', $data, TRUE);		
+		 $this -> mpdf -> WriteHTML($html);
+		 $this -> mpdf -> Output();
+	}
+	
+        function memberListPdfBydateJoined($date1,$date2){
+		 $data['answer'] = $this->mmembers->get_members_by_dates($date1,$date2);
+		 $data['header'] = "MEMBERS JOINED BETWEEN ".$date1." AND ".$date2." ARE ".$data['answer']['total_members']." MEMBERS";
+		 $data['title'] = 'CIS | members list PDF ';
+		 //$this -> load -> library('mpdf');	
+		 $html = $this->load->view('members/member_pdf', $data, TRUE);		
+		 $this -> mpdf -> WriteHTML($html);
+		 $this -> mpdf -> Output();
+	}
+}
+
+/* End of file welcome.php */
+/* Location: ./application/controllers/welcome.php */

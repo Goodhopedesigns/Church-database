@@ -1,0 +1,102 @@
+<?php
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of mgiving_category
+ *
+ * @author simon
+ */
+class mgiving_category extends CI_Model{
+     function mgiving_category(){
+       parent::__construct();
+   }
+   
+   function get_all_giving_category(){
+       $data = array();
+	   $this -> db -> where('status','active');
+       $Q = $this -> db -> get('giving_category');
+       if($Q->num_rows()>0){
+           foreach($Q->result_array() as $row){
+               $data[] = $row;
+           }
+       }
+       $Q ->free_result();
+       return $data;
+   }
+   
+   
+   function get_giving_category_by_id($id){
+       $data = array();
+       $this -> db -> where('id',$id);
+	   $this -> db -> where('status','active');
+       $Q = $this -> db -> get('giving_category');
+       if($Q->num_rows()> 0){
+           $data = $Q->row_array();
+       }
+       $Q->free_result();
+       return $data;
+   }
+    function get_giving_dropdown()
+	{
+		$data = array();
+		//$this -> db -> where('id !=',4);	
+		$this -> db -> where('status','active');
+		$this -> db -> from('giving_category');
+		$Q = $this -> db -> get();
+		if($Q -> num_rows() > 0)
+			{
+				$data[0] = '--SELECT ONE--';
+				foreach($Q -> result_array() as $answer)
+					{
+						$data[$answer['id']] = $answer['category'];
+					}
+			}
+			$Q -> free_result();
+			return $data;
+	}
+   
+   function get_pledged_giving_dropdown(){	// the giving categories in which pledges can be made........
+		$this -> db -> where('id !=',1);
+		$this -> db -> where('id !=',2);
+		$this -> db -> where('id !=',4);
+		$Q = $this -> db -> get('giving_category');
+		$data[0] = "--SELECT ONE--";
+		if($Q->num_rows()>0){
+			foreach($Q->result_array() as $row){
+				$data[$row['id']] = $row['category'];
+			}
+		}
+		$Q->free_result();
+		return $data;
+   }
+   
+   function giving_category_add()
+	{
+		$values = array('id' => '',
+						'category' => $this->input->post('category')
+						);
+		$this -> db -> insert('giving_category',$values);
+	}
+   
+   function giving_category_edit($id){
+		$values = array(
+						'category' => $this -> input -> post('category')
+						);
+		$this -> db -> where('id',$id);
+		$this -> db -> update('giving_category',$values);
+		
+   }
+   function delete_giving_category($id){
+		$values = array(
+						'status' => 'inactive'
+						);
+		$this -> db -> where('id',$id);
+		$this -> db -> update('giving_category',$values);
+   }
+}
+
+?>

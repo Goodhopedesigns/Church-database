@@ -1,0 +1,48 @@
+<div id="message">
+</div>
+<div class="error">
+</div>
+<script type="text/javascript">
+  $(function() {
+       $( "#from-datepicker" ).datepicker();
+     });
+</script>    
+<?php 
+	//echo form_fieldset('Add Attendance');
+	echo "<table class='plain_style_tbl'>";
+	echo form_open('attendance/addingAttendance');
+	echo "<td><label for = 'date'>DATE :"."<span class='mandatory'>*</span>"." </label></td>";
+		 $data = array('name' => 'date','id'=>'from-datepicker', 'size' => 25,'readonly'=>'true');
+	echo "<td>".form_input($data)."</td></tr>";
+	
+	echo "<td><label for = 'no_males'>NUMBER OF MALES : </label></td>";
+		 $data = array('name' => 'no_males','id'=>'no_males', 'size' => 25);
+	echo "<td>".form_input($data)."</td></tr>";
+
+	echo "<td><label for = 'no_females'>NUMBER OF FEMALES : </label></td>";
+		 $data = array('name' => 'no_remales','id'=>'no_remales', 'size' => 25);
+	echo "<td>".form_input($data)."</td></tr>";
+	
+	echo "<td><label for = 'no_children'>NUMBER OF CHILDREN :</label></td>";
+		$data = array('name' => 'no_children','id'=>'no_children', 'size' => 25);
+	echo "<td>".form_input($data)."</td></tr>";
+        
+        echo "<td><label for = 'no_total'>TOTAL ATTENDANCE :"."<span class='mandatory'>*</span>"."</label></td>";
+		$data = array('name' => 'total','id'=>'total', 'size' => 25);
+	echo "<td>".form_input($data)."</td></tr>";
+        
+        echo "<td><label for = 'place'>PLACE OF EVENT :"."<span class='mandatory'>*</span>"."</label></td>";
+		$data = array('name' => 'place','id'=>'place', 'size' => 25);
+	echo "<td>".form_input($data)."</td></tr>";
+
+	echo "<td><label for = 'event'>EVENT DESCRIPTION : "."<span class='mandatory'>*</span>"."</label></td>";
+		$data = array('name' => 'event','id'=>'event', 'cols' => 20,'rows'=>4);
+	echo "<td>".form_textarea($data)."</td></tr>";
+
+	
+	
+	echo "<tr><td colspan=2><center>".form_submit('submit','Add','id=save_attendance class=btn');
+	echo form_submit('cancel','cancel','class=btn')."</center></td></tr>";
+	echo "</table>";
+	//echo form_fieldset_close();	
+?>

@@ -1,0 +1,62 @@
+<script type="text/javascript">
+     $(function() {
+       $( "#datepicker1" ).datepicker();
+     });
+  
+     $(function() {
+       $( "#datepicker2" ).datepicker();
+     });
+  </script>
+<?php
+	 $pdf_query = $query; // a variable for printing different reports on pdf......
+	
+	echo  form_open('visitor/search');
+	echo "<div class='filter_div'>"
+       ." &nbsp;&nbsp; View by date ....<br/>";
+	$data = array('name'=> 'date1', 'id'=> 'datepicker1','class'=>'datepicker','placeholder'=>'Between Date 1','style'=>'margin-left:12px;','readonly'=> '','size' => 20);
+	echo "".form_input($data);
+	
+	$data = array('name'=> 'date2', 'id'=> 'datepicker2','class'=>'datepicker','placeholder'=>'And Date 2','readonly'=> '','size' => 20);
+	
+	echo  form_input($data)
+        ."</div>";
+	
+	//echo " CLICK ".anchor('members/memberListPdf/'.$query,'HERE')." TO PRINT PDF</td></tr>";
+		  $data = array('name' => 'search','align' => 'left', 'id' => 'search','class'=>'search_bar', 'placeholder' => 'Your keyword here..');
+	
+	
+	echo  "<div class='filter_div'>"
+        ."Search visitor..<br/><div id = 'search_box'>"
+	.form_input($data).form_submit('visitor/search','search','class=btn btn-primary')."</div>"
+        ."</div>";
+	 echo "<div class='display_action'>";
+        $excel = "<img src='".base_url()."images/excel.png' class='icon' >";
+        echo anchor('vistor/export /'.$query,$excel);
+        $pdf = " <img src='".base_url()."images/pdf.png' class='icon' >";
+        echo $print = "<img src='".base_url()."images/print.png' class='icon' >";
+        echo anchor_popup('visitor/visitorListPdf/'.$query,$pdf)         
+        ."</div>";
+	echo "<table border = '1' cellpadding = '0' cellspacing = '0' class='list_tbl'>";
+        echo "<tr><td colspan = '11' align = 'center'><center>".@$links."</center></td></tr>";
+	echo "<tr><th>S/N</th><th>FULL NAME</th><th>SEX</th><th>TITLE</th>
+			  <th>EMAIL</th><th>PHONE</th><th>COLLEGE</th><th>RESIDENCE</th><th>DATE VISITED</th>
+			  <th>ACTION</th>
+		  </tr>";
+			 	$index = 0;
+			foreach($answer  as $key => $list)
+				{
+					$index++;
+					echo "<tr><td>".$index."</td>";
+					echo "<td>".strtolower($list['fname']." ".substr($list['mname'],0,1)." ".$list['surname'])."</td>";
+					echo "<td>".$list['sex']."</td><td>".strtolower($list['title'])."</td><td>".$list['email']."</td>";
+					echo "<td style='color:blue;'>".$list['phone']."</td>";
+					echo "<td>".$list['college']."</td>";
+					echo "<td>".$list['residence']."</td>";
+					echo "<td>".$list['date_visited']."</td>";
+					echo "<td align='center'>".anchor('visitors/editVisitor/'.$list['id'],'edit')."</td>";
+					//echo "<td>".anchor('visitors/deleteVisitor/'.$list['id'],'delete')."</td>";
+				}
+				echo "<tr><td colspan = '11' align = 'center'><center>".@$links."</center></td></tr>";
+				echo "<tr><td colspan = '10' align = 'center'>".anchor('visitors/addVisitorFrm','ADD NEW VISITOR')."</td></tr>";
+			  echo "</table>";
+?>

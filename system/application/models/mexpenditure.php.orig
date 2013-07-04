@@ -1,0 +1,142 @@
+<?php
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of mexpenditure
+ *
+ * @author simon
+ */
+class mexpenditure extends CI_Model{
+    function mexpenditure (){
+        parent::__Construct();
+        $this -> load -> library('Pagination');
+    }
+    
+    function record_count(){
+        $Q = $this -> db -> get('expenditure');
+        $num_rows = $Q -> num_rows();
+        return $num_rows;
+    }
+    
+    function get_all_expenditures($limit,$start){
+        $data = array();
+        $this -> db -> limit($limit,$start);
+        $this -> db -> where('status','Active');
+        $Q =$this -> db -> get('expenditure');
+        if($Q -> num_rows()>0){
+            foreach($Q -> result_array() as $row){
+            $answer = $this -> mexpenditure_category -> get_expend_category_by_id($row['expenditure_category']);
+            $row['category'] = $answer['category'];
+            $data[] = $row;
+                
+            }
+			$this -> db -> select('SUM(amount) AS TOTAL');
+			$this -> db -> where('status','active');
+			$Q1 = $this -> db -> get('expenditure');
+			if($Q1-> num_rows()>0){
+				$row = $Q1->row_array();
+				$data['TOTAL'] = $row['TOTAL']; 
+			}
+        }	
+        $Q -> free_result();
+        return $data;
+    }
+    function get_expenditure_by_id($id){
+        $data = array();
+        $this -> db -> where('id',$id);
+        $this -> db -> where('status','Active');
+        $Q = $this ->db -> get('expenditure');
+       // echo $this -> db -> last_query();exit;
+         if($Q ->num_rows() > 0){
+             foreach ($Q-> result_array() as $row){
+              $answer = $this -> mexpenditure_category -> get_expend_category_by_id($row['expenditure_category']);
+              $row['category_name'] = $answer['category']; 
+             $data = $row;
+              
+           }
+       }
+            $Q -> free_result();
+            return $data;
+         }
+		 
+	function get_expenditures_by_cat($catid){
+		$data = array();
+		$this -> db -> where('expenditure_category',$catid);
+		$this -> db -> where ('status','active');
+		$Q = $this -> db -> get('expenditure');
+			if($Q->num_rows()>0){
+				foreach($Q->result_array() as $row){
+					$data[] = $row;	
+				}
+			}
+			$this -> db -> select('SUM(amount) AS TOTAL');
+		   $this -> db -> where('expenditure_category',$catid);
+		   $this -> db -> where('status','Active');
+		   $Q = $this -> db -> get('expenditure');	
+			if($Q->num_rows()>0){
+				$row = $Q->row_array();
+				$data['TOTAL'] = $row['TOTAL'];
+			}
+			
+			$Q->free_result();
+			return $data;
+	}
+	
+    function get_expenditures_by_dates($date1,$date2){
+         $data = array();
+         $this -> db -> where('status','Active');
+         $this -> db -> where('date >=',$date1);
+		 $this -> db -> where('date <=',$date2);
+         $Q = $this -> db -> get('expenditure');
+         if($Q -> num_rows() > 0){
+             foreach($Q -> result_array() as $row){
+				 $answer = $this -> mexpenditure_category -> get_expend_category_by_id($row['expenditure_category']);
+				 $row['category'] = $answer['category'];
+                 $data[] = $row;
+             }
+			 $this -> db -> select('SUM(amount) AS TOTAL');
+			 $this -> db -> where('status','Active');
+			 $this -> db -> where('date >=',$date1);
+			 $this -> db -> where('date <=',$date2);
+			 $Q1 = $this -> db -> get('expenditure');
+				if($Q1->num_rows()>0){
+					$row = $Q1 -> row_array();
+					$data['TOTAL'] = $row['TOTAL'];
+				}
+         }
+         $Q -> free_result();
+         return $data; 
+    }
+    function record_expenditure()
+        {
+           $values = array(
+                           'id' => '',
+                           'expenditure_category' => $this ->input->post('category'),
+                           'date' => $this ->input->post('date'),
+                           'amount' => $this ->input->post('amount'),
+                           'description' => $this ->input->post('description')
+                           );
+           $this -> db -> insert('expenditure',$values);
+        }
+    function edit_expenditure($id,$category){
+         $values = array(
+                           'expenditure_category' => $category,
+                           'date' => $this ->input->post('date'),
+                           'amount' => $this ->input->post('amount'),
+                           'description' => $this ->input->post('description')
+                           );
+         $this -> db -> where('id',$id);
+         $this -> db -> update('expenditure',$values);
+    }
+    function delete_expenditure($id){
+        $values = array('status' => 'Inactive');
+        $this -> db -> where('id',$id);
+        $this -> db -> update('expenditure',$values);
+    }
+}
+
+?>

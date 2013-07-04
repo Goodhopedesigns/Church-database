@@ -1,0 +1,126 @@
+<?php 
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of member_ministry
+ *
+ * @author simon
+ */
+class member_ministry extends CI_Controller{
+	function member_ministry(){
+			parent::__construct();
+			session_start();
+			if(!isset($_SESSION['user'])){redirect('index.php/welcome/index','refresh');}
+			 $this -> load -> library('mpdf');	
+			}
+    public function index()
+        {
+        $data['header'] = 'LIST OF MEMBER MINISTRIES';
+        $data['title'] = 'CIS | MINISRIES';
+        $data['main'] = 'ministries/member_ministry_ls';
+        $data['answer'] = $this -> mmember_ministry -> get_all_member_ministries();
+        //$data['members'] = $this -> mmembers -> get_memberswithnoministry_dropdown();
+        $this -> load ->vars($data);
+        $this->load->view('generic/template');
+        }
+    function assignMemberFrm(){
+        $data['header'] = 'ASSIGNING A MEMBER TO A MINISTRY';
+        $data['title'] = 'CIS | MINISRIES';
+        $data['main'] = 'ministries/member_ministry_assign';
+        $data['answer'] = $this -> mministry_groups -> get_ministrygrp_dropdown();
+        $data['members'] = $this -> mmembers -> get_memberswithnoministry_dropdown();
+        $this -> load ->vars($data);
+        $this->load->view('generic/template');
+    }
+    function assignMember(){
+            if(isset($_POST['submit'])){
+                $this -> mmember_ministry -> assign_member();
+                redirect('index.php/member_ministry','refresh');
+            }
+           else{
+               redirect('index.php/member_ministry','refresh');
+           }
+        }
+		function EditmemberMinistyFrm($id){//	echo $id;exit;
+			$data['title'] = 'CIS | MEMBER MINISTRY EDIT';
+			$data['header'] = 'EDITING MEMBER MINISTRY ';
+			$data['main'] = 'ministries/member_ministry_edit';
+			$data['answer'] = $this -> mministry_groups -> get_ministrygrp_dropdown();
+			$data['member'] = $this -> mmember_ministry -> get_member_ministry_by_id($id);
+			
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}
+		function editingMemberMinistry($id){
+			if($this -> input -> post('submit'))
+			{
+				if($this -> input -> post('ministry') == 0)
+				{	
+					redirect('index.php/member_ministry/index','refresh');
+				}
+				else{
+					$this -> mmember_ministry -> edit_member_ministry($id);
+					redirect('index.php/member_ministry/index','refresh');
+				}
+			}
+			else{
+				redirect('index.php/member_ministry/index','refresh');
+			}
+		}
+//   <-----------------------------------	REPORT VIEWER FUNCTIONS -------------------------------------------->
+    function memberMinistryView(){
+        $data['title'] = "CIS | MINISTRIES VIEW";
+        $data['header'] = 'LIST OF MEMBERS AND THEIR MINISTRY GROUPS';
+        $data['main'] = '/ministries/member_ministry_ls_report';
+        $data['answer'] = $this -> mmember_ministry -> get_all_member_ministries();
+		$data['ministry_groups'] = $this -> mministry_groups -> get_member_ministrygrp_dropdown();
+        $this -> load ->vars($data);
+        $this->load->view('generic/template');
+    }
+	function membersByMinistry(){
+		$ministry_group = $this -> input -> post('ministry');
+		$answer = $this -> mmember_ministry -> get_members_by_ministrygrp($ministry_group);
+		$ministry = $this -> mministry_groups -> get_ministry_grp_by_id($ministry_group);
+		$data['answer'] = $answer[0];
+		$data['ministry_group'] = $ministry_group;
+		if($answer['total_members'] > 1)
+			{  $aux = 'ARE ';	$plr = 'S';} 
+		else{ $aux = 'IS ';	$plr = ''; }	//modifications on header information on single and multiple records....
+		
+		$data['header'] = 'THERE '.$aux .$answer['total_members'].' MEMBER'.$plr.' WHO BELONG TO '.strtoupper($ministry['ministry']);
+        $data['title'] = 'CIS |member ministry';
+		$data['main'] = 'ministries/member_ministry_ls_report';
+		$data['ministry_groups'] = $this -> mministry_groups -> get_member_ministrygrp_dropdown();
+        $this -> load ->vars($data);
+        $this->load->view('generic/template');
+		
+	}
+	function memberMinistryByGroupPdf($ministry_group){
+			 $answer = $this -> mmember_ministry -> get_members_by_ministrygrp($ministry_group);
+			 $ministry = $this -> mministry_groups -> get_ministry_grp_by_id($ministry_group);
+			 $data['answer'] = $answer[0];
+			 $data['ministry_group'] = $ministry_group;
+			 $data['header'] = 'THERE ARE '.$answer['total_members'].' MEMBERS WHO BELONG TO '.strtoupper($ministry['ministry']);
+			 $data['main'] = 'ministries/member_ministry_pdf';
+			 $data['title'] = 'CIS |member ministry PDF';
+			 $html = $this->load->view('ministries/member_ministry_pdf', $data, TRUE);		
+			 $this -> mpdf -> WriteHTML($html);
+			 $this -> mpdf -> Output();
+	}
+	function memberMinistriesPdf(){	
+		     $data['answer'] = $this -> mmember_ministry -> get_all_member_ministries();
+			 $data['header'] = 'LIST OF MEMBERS AND THEIR MINISTRY GROUPS';
+			 $data['main'] = 'ministries/member_ministry_pdf';
+			 $data['title'] = 'CIS |member ministry PDF';
+			//$this -> load -> library('mpdf');	
+			 $html = $this->load->view('ministries/member_ministry_pdf', $data, TRUE);		
+			 $this -> mpdf -> WriteHTML($html);
+			 $this -> mpdf -> Output();
+	}
+}
+
+?>

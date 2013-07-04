@@ -1,0 +1,114 @@
+<?php
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of mmember_ministry
+ *
+ * @author simon
+ */
+class mmember_ministry extends CI_Model{
+		function mmember_ministry(){
+			parent::__construct();
+		}
+    function get_all_member_ministries(){
+        $data = array();
+        $Q = $this -> db -> get('member_ministry');
+        $data = array();
+        if($Q -> num_rows() > 0){
+            foreach($Q->result_array() as $row){
+            $answer = $this ->mmembers ->get_member_by_id($row['memberid']); 
+            $row['fname'] = $answer['fname'];// names with the middle initial
+			$row['mname'] = $answer['mname'];
+			$row['surname'] = $answer['surname'];
+			$row['email'] = $answer['email'];
+				// the welcome group in which a member is in ..................................
+			$welcome =$this -> mwelcome_group -> get_welcome_grp_by_id($answer['welcome_groupno']);
+			$row['welcome_groupno'] = $welcome['name']." [ ".$welcome['meeting_place']." ]"; // welcome group and its meeting place..
+				// the ministry group in which a member is in..................
+			$answer1 = $this -> mministry_groups -> get_ministry_grp_by_id($row['ministryid']);
+			$row['ministry'] = $answer1['ministry'];
+				// obtaining the member's phone numbers.
+			$row['phone_numbers'] = $this -> mmember_phone -> get_member_phone_by_memberid($row['memberid']);
+            $data[] = $row;
+       }
+        }
+       $Q ->free_result();
+       return $data;
+   }
+   function get_member_ministry_by_id($id){
+        $data = array();
+       $this -> db -> where('id',$id);
+       $Q = $this -> db -> get('member_ministry');
+       if($Q->num_rows()>0){
+           $row = $Q->row_array();
+		   $member = $this -> mmembers -> get_member_by_id($row['memberid']);
+		    $row['name'] = $member['fname']." ".strtoupper(substr($member['mname'],0,1))." ".$member['surname'];
+			$ministry = $this -> mministry_groups -> get_ministry_grp_by_id($row['ministryid']);
+			$row['ministry'] = $ministry['ministry'];
+			$data = $row;
+       }
+       $Q->free_result();
+       return $data;
+   }
+   function get_memberid_by_ministry($ministryid){
+       $data = array();
+       $this -> db -> where('ministryid',$ministryid);
+       $Q = $this -> db -> get('member_ministry');
+       if($Q -> num_rows()> 0){
+           $data = $Q -> row_array();
+       }
+       $Q -> free_result();
+       return $data;
+   }
+   function assign_member(){
+       $values = array('id' => '',
+                        'memberid' => $this -> input ->post('member'),
+                        'ministryid' => $this -> input ->post('ministry')
+               );
+       $this -> db -> insert('member_ministry',$values);
+   }
+   function edit_member_ministry($id){
+		$values = array(
+                        'memberid' => $this -> input ->post('memberid'),
+                        'ministryid' => $this -> input ->post('ministry')
+               );	
+		$this -> db -> where('id',$id);
+       $this -> db -> update('member_ministry',$values);
+   }
+   function get_members_by_ministrygrp($ministry_group){
+		$Q = $this -> db -> query("
+									SELECT m.id,m.code_no,m.fname,m.mname,m.surname,m.email,m.welcome_groupno 
+									FROM members m WHERE id IN
+									(SELECT mn.memberid FROM member_ministry mn WHERE ministryid = $ministry_group)
+								 ");
+		if($Q->num_rows()>0){
+			foreach($Q->result_array() as $row){
+				$welcomegrp = $this -> mwelcome_group -> get_welcome_grp_by_id($row['welcome_groupno']);
+				$row['welcome_groupno'] = $welcomegrp['name']." [".$welcomegrp['meeting_place']." ]";
+				$phone = $this -> mmember_phone ->get_member_phone_by_memberid($row['id']);
+				$row['phone_numbers'] = $phone;
+				$result[] = $row;
+			}
+		}
+			
+			$Q1 = $this -> db -> query("
+									SELECT COUNT(m.id)AS total_memebers FROM members m WHERE id IN
+									(SELECT mn.memberid FROM member_ministry mn WHERE ministryid = $ministry_group)
+								 ");
+			if($Q1->num_rows()>0){
+				$row= $Q1->row_array();
+				$total_members = $row['total_memebers'];
+				}
+				$data['total_members'] = $total_members;
+				$data[0] = $result;
+		$Q->free_result();
+		return $data;
+		}
+   }
+
+
+?>

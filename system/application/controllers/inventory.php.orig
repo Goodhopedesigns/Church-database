@@ -1,0 +1,83 @@
+<?php
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of inventory
+ *
+ * @author simon
+ */
+class inventory extends CI_Controller{
+	function inventory(){
+			parent::__construct();
+			session_start();
+			if(!isset($_SESSION['user'])){redirect('welcome/index','refresh');}
+			}
+	
+    function index()
+    {
+       $data['title'] = 'CIS inventory';
+       $data['main'] = 'inventories/inventory_ls';
+       $data['header'] = 'LIST OF ALL CHURCH ASSETS';
+      $data['answer'] = $this -> minventory ->get_all_inventory();
+       $this -> load -> vars($data);
+       $this -> load -> view('generic/template');
+    }
+    function inventoryTakingFrm(){
+       $data['title'] = 'CIS inventory';
+       $data['main'] = 'inventories/inventory_taking';
+       $data['header'] = 'fill the details of the item to be added';
+       $data['answer'] = $this -> mmembers -> get_members_dropdown();
+       $data['status'] = $this -> minventory_status -> get_status_dropdown();
+       $this -> load -> vars($data);
+       $this -> load -> view('generic/template');
+    }
+    function inventoryTaking(){
+        if($this -> input -> post ('submit'))
+            {
+                $this -> minventory -> add_inventory_item();
+                redirect('inventory/index','refresh');
+            }
+        else
+            {
+                redirect('inventory/index','refresh');
+            }
+    }
+   function editInventoryFrm($id){
+       $data['title'] = 'CIS inventory';
+       $data['main'] = 'inventories/inventory_edit';
+       $data['header'] = 'EDITING ASSET DETAILS';
+       $data['inventory'] = $this ->minventory -> get_inventory_by_id($id);
+       $data['answer'] = $this -> mmembers -> get_members_dropdown();
+       $data['status'] = $this -> minventory_status -> get_status_dropdown();
+       $this -> load -> vars($data);
+       $this -> load -> view('generic/template');
+   }
+   function editingInventory($id,$status,$bought_donated){
+       if($this -> input -> post('submit')){
+          $bought = $this -> input -> post('bought_donated');
+          $inv_status = $this -> input ->post('status');
+           if($bought ==0){
+               $bought = $bought_donated;
+           }
+           if($inv_status == 0){
+              $inv_status = $status;
+           }
+           
+            $this->minventory->edit_inventory($id,$inv_status,$bought);
+             redirect('inventory/index','refresh');
+      }
+     else
+     {
+          redirect('inventory/index','refresh');
+     }
+   }
+  function deleteInventoryAsset($id){
+      $this -> minventory -> delete_inventory_asset($id);
+      redirect('inventory/index','refresh');
+  }  
+}
+
+?>

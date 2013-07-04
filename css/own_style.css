@@ -1,0 +1,55 @@
+/* 
+    Document   : own_style
+    Created on : Apr 18, 2013, 10:48:21 PM
+    Author     : Jerry
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.cit_logo_top{
+       width:105px;
+       height:50px;
+       margin-left: 10px;
+       margin-right: 10px;
+   }
+   .icon{
+    width:21px;
+    height:19px;
+    margin: 2px;
+    cursor: pointer;
+}
+.icon:hover{
+    width:25px;
+    height:23px;
+    margin: 0px;
+    cursor: pointer;
+}
+.link_num{
+    display: inline;
+    position:relative;
+    width:20px;
+    border: 1px solid rgb(145, 223, 30);
+    margin: 1px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+.link_num:hover{
+    background: whitesmoke;
+    border: 1px solid gray;
+}
+#welcome_home{
+color: lightgray;    
+background: none repeat scroll 0 0 rgba(255, 255, 255, 0.3);
+border: 1px solid lightgreen;
+/*text-shadow: 0px 0px 1px black;*/
+border-radius: 8px;
+box-shadow: 0px 1px 2px 1px darkgray;
+padding: 10px;
+height: 105px;
+font-family: arial narrow;
+font-size: 20px;
+line-height: 25px;
+text-align: justify;
+font-weight: bolder;
+}
+

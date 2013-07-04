@@ -1,0 +1,7 @@
+	<ul id="list" class="nav nav-list bs-docs-sidenav">
+	   <li> <?php  echo anchor('members/memberView','View Members'); ?></li>	
+	   <li> <?php  echo anchor('expenditure/index','View Expenditures'); ?></li>
+	   <li><?php  echo anchor('inventory/index','View Inventories').'  '; ?></li>
+	   <li><?php  echo anchor('attendance/View','View Attendance').'  '; ?></li>
+	   <li><?php  echo anchor('giving/View','View Giving').'  '; ?></li>  
+	</ul>

@@ -1,0 +1,118 @@
+<?php
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of mattendance
+ *
+ * @author simon
+ */
+class mattendance extends CI_Model{
+    
+   function mattendance(){
+    parent:: __construct();
+    }
+	
+	function get_all_attendance(){
+       $data = array();
+       $Q = $this -> db -> get('attendance');
+       if($Q->num_rows()>0){
+           foreach($Q->result_array() as $row){
+               $data[] = $row;
+           }
+		 $this -> db -> select('AVG(no_males) AS MALES,AVG(no_females) AS FEMALES,AVG(no_children) AS CHILDREN');
+		 $Q1 = $this -> db -> get('attendance');
+			if($Q1-> num_rows() > 0){
+				$answer = $Q1-> row_array();
+				$data['avg_male'] = $answer['MALES'];
+				$data['avg_female'] = $answer['FEMALES'];
+				$data['avg_children'] = $answer['CHILDREN'];
+			}
+       }
+       $Q ->free_result();
+       return $data;
+   }
+   
+   
+      function attendance_add(){///id, date, no_males, no_ females, no_ children
+		
+       $values = array('id' =>'',
+                        'date' => $this->input->post('date'),
+                        'no_males' => $this->input->post('males'),
+                        'no_females' => $this->input->post('females'),
+                        'no_children' => $this->input->post('children'),
+                        'event_desption' => $this->input->post('event')
+                        ); 
+       $this -> db -> insert('attendance',$values);
+   }
+	function attendance_edit($id){
+		$values = array(
+                        'date' => $this->input->post('date'),
+                        'no_males' => $this->input->post('no_males'),
+                        'no_females' => $this->input->post('no_females'),
+                        'no_children' => $this->input->post('no_children'),
+                        'event_desption' => $this->input->post('event')
+                        );
+		$this -> db -> where('id',$id);
+		$this -> db -> update('attendance',$values);
+	}
+   
+    function get_attendance_by_memberid($id){
+        $data = array();
+        $options = array('id' => $id);
+        $Q = $this->db->getwhere('attendance',$options,1);
+        if($Q-> num_rows()> 0 ){
+            $data = $Q -> row_array();
+        }
+        $Q -> free_result();
+        return $data;
+        }
+     function get_attendance_by_dates($date1,$date2){
+         $data = array();
+         $this -> db -> where('date >=',$date1);
+		 $this -> db -> where('date <=',$date2);
+         $Q = $this -> db -> get('attendance');
+         if($Q -> num_rows() > 0){
+             foreach($Q -> result_array() as $row){
+                 $data[] = $row;
+             }
+			
+
+		 $this -> db -> select('AVG(no_males) AS MALES,AVG(no_females) AS FEMALES,AVG(no_children) AS CHILDREN');
+		 $this -> db -> where('date >=',$date1);
+		 $this -> db -> where('date <=',$date2);
+         $Q1 = $this -> db -> get('attendance');	
+			if($Q1->num_rows()>0){
+				$answer = $Q1->row_array();
+				$data['avg_male'] = $answer['MALES'];
+				$data['avg_female'] = $answer['FEMALES)'];
+				$data['avg_children'] = $answer['CHILDREN'];
+			}$Q1 -> free_result();
+         }	
+         $Q -> free_result();
+         return $data; 
+     }
+	 
+	    function get_attendance_by_id_1($id){
+        $data = array();
+       $this -> db -> where('id',$id);
+       $Q = $this -> db -> get('attendance');
+       if($Q->num_rows()>0){
+           $data = $Q->row_array();
+       }
+       $Q->free_result();
+       return $data;
+	   
+	   
+   }
+	 
+	 
+	 
+    }
+    
+
+
+?>

@@ -1,0 +1,8 @@
+
+<ul id="list">
+   <li> <?php  echo anchor('Users/addUser','Create/Register User'); ?></li>	
+   <li> <?php  echo anchor('Users/resetPassword','Reset User Password'); ?></li>
+   <li><?php  echo anchor('Categories/addCategory','Add Categories').'  '; ?></li>
+   <li><?php  echo anchor('userActions/index','View User Actions').'  '; ?></li>
+   
+</ul>

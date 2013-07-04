@@ -1,0 +1,63 @@
+ <div id="message">
+ </div>
+ <div class="error">
+ </div>    
+	<script>
+     $(function() {
+       $( "#datepicker" ).datepicker();
+     });
+  </script>
+  
+<?php //print_r($related);exit;
+	echo "<table class='plain_style_tbl'>";
+	echo form_open('members/addingMember');
+	echo "<tr>";
+	echo "<td><label for = 'fname'>FIRST NAME :"."<span class='mandatory'>*</span> "."</label></td>";
+		 $data = array('name' => 'fname','id'=>'fname', 'size' => 25);
+	echo "<td>".form_input($data)."</td>";
+	echo "<td><label for = 'profession'>PROFESSION : </label></td>";
+		 $data = array('name' => 'profession','id'=>'profession', 'size' => 25);
+	echo "<td>".form_input($data)."</td></tr>";
+	
+	echo "<tr><td><label for = 'mname'>MIDDLE NAME : </label></td>";
+		 $data = array('name' => 'mname','id'=>'mname', 'size' => 25);
+	echo "<td>".form_input($data)."</td>";
+	echo "<td><label for = 'date_joined'> DATE : </label></td>";
+		 $data = array('name' => 'date_joined','id'=>'datepicker','readonly' =>'', 'size' => 25);
+	echo "<td>".form_input($data)."</td></tr>";
+	
+	echo "<tr><td><label for = 'mname'>SURNAME :"."<span class='mandatory'>*</span> "." </label></td>";
+		 $data = array('name' => 'surname','id'=>'surname', 'size' => 25);
+	echo "<td>".form_input($data)."</td>";
+	echo "<td><label for = 'related'> RELATED TO: </label></td>";
+		 $data = array('name' => 'related','id'=>'related', 'size' => 25);
+	echo "<td>".form_dropdown('relatedto',$related)."</td></tr>";
+	
+	echo "<tr><td><label for = 'sex'> SEX :"."<span class='mandatory'>*</span> "." </label></td>";
+             $data = array('0'=>'- select one -','M'=>'Male','F'=>'Female');
+			echo "<td>".form_dropdown('sex',$data);
+			
+	echo "</td>";
+	echo "<td><label for = 'related'> RELATIONSHIP : </label></td>";
+		 //$data = array('name' => 'relationship','id'=>'relationship', 'size' => 25);
+	echo "<td>".form_dropdown('relationship',$relationship)."</td></tr>";
+	
+	echo "<tr><td><label for = 'title'>TITLE : "."<span class='mandatory'>*</span> "."</label></td>";
+		 $data = array('name' => 'title','id'=>'title', 'size' => 25);
+	echo "<td>".form_input($data)."</td>";
+	echo "<td><label for = 'residence'> RESIDENCE:"."<span class='mandatory'>*</span> "." </label></td>";
+		 $data = array('name' => 'residence','id'=>'residence', 'size' => 25);
+	echo "<td>".form_input($data)."</td></tr>";
+	echo "<tr><td><label for = 'code'>CODE NUMBER:"."<span class='mandatory'>*</span> "." </label></td>";
+		$data = array('name' => 'code_no','id'=>'code_no', 'size' => 25);
+	echo "<td>".form_input($data)."</td>";
+	echo "<td><label for ='welcome'> WELCOME GROUP </label></td>";
+	echo "<td>".form_dropdown('welcome_group',$answer)."</td><tr>";
+	echo "<tr><td>EMAIL</td><td><input type = 'email' name = 'email' size = '35px'></td>";
+		echo	"<td><label for = 'phone'>PHONE NUMBER</label></td>";
+			$data = array('name' => 'phone','id'=>'phone', 'size' => 25);
+	echo "<td>".form_input($data)."</td></tr>";		
+	echo "<tr><td></td><td><input type='submit' name='submit' value='submit' class='btn' id='save_member' onclick='actionPerformed(\"Saving Member..\")' /></td>";
+	echo "<td>".form_submit('cancel','cancel','class=btn')."</td></tr>";
+	echo "</table>";
+?>

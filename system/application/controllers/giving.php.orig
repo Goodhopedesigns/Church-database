@@ -1,0 +1,156 @@
+<?php 
+	if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Giving extends CI_Controller {
+
+	function Giving(){
+			parent::__construct();
+			session_start();
+			if(!isset($_SESSION['user'])){redirect('index.php/welcome/index','refresh');}
+			}
+	//---------------------------------------------	DATA ENTRY FUNCTIONS ---------------------------------------//
+	public function index()
+		{
+			$data['title'] = 'CIS | Giving List';
+			$data['main'] = 'givings/giving_ls';
+			$data['answer'] = $this -> mgiving -> get_all_giving();
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}
+		
+	public function manage()
+		{
+			$data['title'] = 'CIS | Giving Manage';
+			$data['header'] = "GIVING CONTRIBUTIONS ON DIFFERENT CATEGORIES.";
+			$data['main'] = 'givings/giving_ls';
+			$data['answer'] = $this -> mgiving -> get_all_giving();
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}
+
+		
+	function addingGiving() // adding member to database.
+                {	
+					
+                        if(isset($_POST['submit']))
+                        {
+                            $add = $this -> mgiving -> giving_add();
+                            $data['title'] = 'CIS | Giving List';
+                            redirect('giving/index','refresh');
+                        }
+                       else
+                       {
+                           redirect('giving/index','refresh');
+                       }
+		}
+	function addGiving()  // add member form.
+		{	
+			$data['answer'] = $this->mmembers->get_members_code_dropdown(); 
+			$data['categories'] = $this->mgiving_category->get_giving_dropdown();
+			$data['title'] = "CIS | Add Giving";
+			$data['header'] = "ADD GIVING INFORMATION";
+			$data['main'] = 'givings/giving_add';
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}	
+	function editGiving($givingid) // editing form..
+		{	
+			$data['answer'] = $this -> mgiving -> get_giving_by_id_1($givingid);
+			$data['category']= $this->mgiving_category->get_giving_dropdown();
+			$data['title'] = "CIS | Edit Giving";
+			$data['header'] = "EDITING GIVING INFORMATION";
+			$data['main'] = 'givings/giving_edit';
+			$this -> load ->vars($data);
+			$this->load->view('generic/template');
+		}
+	function editingGiving($id,$category)
+		{	
+			if(isset($_POST['submit']))
+			{
+				$old = $this -> input -> post('giving_category');
+				if($old == 0){
+					$newCat = $category;
+				}
+				else
+				{
+					$newCat = $old;
+				}
+			 
+			 $this -> mgiving -> edit_giving($id,$newCat);
+			 redirect('giving/index','refresh');
+			}
+			else
+			{
+				 redirect('giving/index','refresh');
+			}
+		}
+		
+	function deleteGiving($id)
+		{
+			$this -> mgiving -> delete_giving($id);
+			redirect('giving/index','refresh');
+		}
+		function addPledge(){
+		//form yA kuadd pledge
+	}
+		
+//--------------------------	REPORT VIEWER FUNCTIONS		-------------------------------------------------------------------//		
+	function givingView(){
+		$data['title'] = 'CIS | Giving List';
+		$data['main'] = 'givings/giving_ls_report';
+		$data['answer'] = $this -> mgiving -> get_all_giving();
+		$data['category'] = $this -> mgiving_category -> get_giving_dropdown();
+		$data['header'] = 'ALL CHURCH GIVINGS';
+		$this -> load ->vars($data);
+		$this->load->view('generic/template');
+	}
+	function givingReportBycat()
+	{	
+		$data['title'] = 'CIS | Giving List';
+		$catid = $this -> input -> post('category');
+		$data['answer'] = $this -> mgiving -> get_giving_by_cat($catid);
+		$data['main'] = 'givings/giving_ls_report';
+		$data['category'] = $this -> mgiving_category -> get_giving_dropdown();
+		$catname = $this -> mgiving_category -> get_giving_category_by_id($catid);
+		$data['header'] = 'THE GIVING CONTRIBUTIONS LIST FROM '.strtoupper($catname['category']);
+		$this -> load ->vars($data);
+		$this->load->view('generic/template');
+	}
+	function givingReportByDates()
+	{
+		$date1 = $this -> input -> post('date1');
+		$date2 = $this -> input -> post('date2');
+		$data['answer'] = $this -> mgiving -> get_giving_by_dates($date1,$date2);
+		$data['main'] = 'givings/giving_ls_report';
+		$data['category'] = $this -> mgiving_category -> get_giving_dropdown();
+		if(!($date1 == $date2)){
+				$data['header'] = 'THE GIVING CONTRIBUTIONS LIST FROM DIFFERENT CATEGORIES FROM '.$date1." AND ".$date2;
+			}
+		else{
+				$data['header'] = 'THE GIVING CONTRIBUTION LIST FROM DIFFERENT CATEGORIES MADE ON '.$date1;
+			}
+		$this -> load ->vars($data);
+		$this->load->view('generic/template');
+	}
+	function givingDetailedReport()
+		{
+			$data['main'] = "givings/giving_detailed_report";
+			$data['header'] = " GIVING DETAILED REPORTS";
+			$data['title'] = "CIS | GIVING DETAILED REPORTS";
+			$this -> load -> vars($data);
+			$this -> load -> view('generic/template');
+		}
+	function pledges(){
+		$data['title'] = 'CIS | PLEDGES REPORTS';
+		$data['header'] = "THE GIVING PLEDGES MADE ON DIFFERENT CATEGORIES";
+		$data['answer'] = $this -> mpledge_details -> get_all_pledges();
+		$data['categories'] = $data['category'] = $this -> mgiving_category -> get_pledged_giving_dropdown();
+		$data['main'] = "givings/giving_pledges";
+		$this -> load -> vars($data);
+		$this -> load -> view('generic/template');
+		}
+		
+	}
+
+/* End of file welcome.php */
+/* Location: ./application/controllers/welcome.php */

@@ -1,0 +1,170 @@
+<?php
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of mgiving
+ *
+ * @author simon
+ */
+class mgiving extends CI_Model{
+   function mgiving(){
+       parent::__construct();
+   }
+   
+   
+   function get_all_giving(){
+       $data = array();
+       $Q = $this -> db -> get('giving');
+       if($Q->num_rows()>0){
+           foreach($Q->result_array() as $row){ 
+               $answer = $this -> mmembers ->get_member_by_code($row['membercode']);
+               $row['name'] = $answer['fname']." ".substr($answer['mname'],0,1)." ".$answer['surname'];
+               $answer1 = $this -> mgiving_category ->get_giving_category_by_id($row['giving_category']);
+               $row['giving_category'] = $answer1['category'];
+               $data[] = $row;
+           }
+		   $this -> db -> select('SUM(amount) AS TOTAL');
+		   $Q1 = $this -> db -> get('giving');
+		   if($Q1->num_rows()>0){
+				$row1 = $Q1->row_array();
+				$data['TOTAL'] = $row1['TOTAL'];
+		   }
+       }
+       $Q ->free_result();
+       return $data;
+   }
+   
+   
+   function get_giving_by_member_id($member_id){
+        $data = array();
+        //$options = array('id',$member_id);
+       $this ->db -> where('id',$member_id);
+       $Q  = $this -> db -> get('giving');
+         if($Q ->num_rows() > 0){
+             foreach ($Q-> result_array() as $row){
+               $data[] = $row;
+           }
+       }
+            $Q -> free_result();
+            return $data;
+   }
+    function get_giving_by_code($membercode){
+        $data = array();
+        $this -> db -> where('membercode',$membercode);
+        $Q = $this -> db -> get('giving');
+        if($Q -> num_rows() > 0){
+            foreach($Q -> result_array() as $row){
+                $data[] = $row;
+            }
+        }
+        $Q -> free_result();
+        return $data;
+        }
+    function get_giving_by_dates($date1,$date2){ 
+        $data = array();
+		if(!($date1 == $date2)){
+			$this -> db -> where('date >= ',$date1);
+			$this -> db -> where('date <= ',$date2);
+		}
+		else{
+			$this -> db -> where('date =',$date1);
+		}
+        $Q = $this -> db -> get('giving'); //echo $this -> db -> last_query();exit;
+        if($Q -> num_rows() > 0){
+            foreach($Q -> result_array() as $row){
+                $answer = $this -> mmembers -> get_member_by_code($row['membercode']);
+				$row['name'] = $answer['fname']." ".strtoupper(substr($answer['mname'],0,1))." ".$answer['surname'];
+				$data[] = $row;
+            }
+		// QUERYING FOR THE TOTAL AMOUNT OF GIVING AS PER ABOVE QUERY....	
+			$this -> db -> select('SUM(amount) AS TOTAL');
+			if(!($date1 == $date2)){
+				$this -> db -> where('date >= ',$date1);
+				$this -> db -> where('date <= ',$date2);
+			}
+			else{
+				$this -> db -> where('date =',$date1);
+				}
+				$Q1 = $this -> db -> get('giving');
+				if($Q1 -> num_rows()> 0){
+					$row =$Q1->row_array();
+					$data['TOTAL'] = $row['TOTAL'];
+				}
+				$Q1 -> free_result();
+				
+        }
+        $Q -> free_result();
+        return $data;
+       }
+   function get_giving_by_cat($cat){
+       $data = array();
+       $this -> db -> where('giving_category',$cat);
+       $Q = $this -> db -> get('giving');
+       if($Q -> num_rows() > 0){
+           foreach($Q -> result_array() as $row){
+			$answer = $this -> mmembers -> get_member_by_code($row['membercode']);
+			   $row['name'] = $answer['fname']." ".strtoupper(substr($answer['mname'],0,1))." ".$answer['surname'];
+               $data[] = $row;
+           }
+		   
+		    $this -> db -> select('SUM(amount) AS TOTAL');
+			$this -> db -> where('giving_category',$cat);
+			$Q1 = $this -> db -> get('giving'); 
+				if($Q-> num_rows() > 0){
+					$row1 = $Q1 -> row_array(); 
+					$data['TOTAL'] = $row1['TOTAL'];
+				} $Q1 -> free_result();
+       }
+       $Q -> free_result();
+       return $data;
+   }
+   
+      function giving_add(){
+		//from the id getting the memberr's code........................
+		$id = $this -> input -> post('mcode');
+		$member = $this -> mmembers -> get_member_by_id($id);
+		$membercode = $member['code_no'];
+       $values = array('id' => '',
+                        'membercode' => $membercode,
+                        'giving_category' => $this->input->post('giving_category'),
+                        'date' => $this->input->post('date'),
+                        'amount' =>    $this->input->post('amount')
+                        );
+			$this -> db -> insert('giving',$values);
+		}
+	function delete_giving($id){ // when entered by mistakes....
+		$this -> db -> where('id',$id);
+		$this -> db -> delete('giving');
+		$this -> db -> last_query();
+	}
+   
+   function get_giving_by_id_1($id){
+        $data = array();
+       $this -> db -> where('id',$id);
+       $Q = $this -> db -> get('giving');
+       if($Q->num_rows()>0){
+           $data = $Q->row_array();
+		   $answer = $this -> mgiving_category ->get_giving_category_by_id($data['giving_category']); 
+		   $data['category'] = $answer['category'];
+	   }
+       $Q->free_result();
+       return $data;
+   }
+	function edit_giving($id,$giving_category){ 
+		$values = array(
+                        'membercode' => $this->input->post('membercode'),
+                        'giving_category' => $giving_category,
+                        'date' => $this->input->post('date'),
+                        'amount' =>    $this->input->post('amount')
+                        ); 
+		$this -> db -> where('id',$id);
+		$this -> db -> update('giving',$values);
+	}
+   
+}
+
+?>
